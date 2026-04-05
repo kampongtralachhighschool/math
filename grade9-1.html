@@ -339,22 +339,25 @@
             const loadingDiv = document.getElementById('ai-loading');
             const feedbackDiv = document.getElementById('ai-feedback');
             
-            // Construct the prompt
-            let prompt = `អ្នកគឺជាគ្រូបង្រៀនគណិតវិទ្យាថ្នាក់ទី៩ដ៏ពូកែនិងចេះលើកទឹកចិត្តម្នាក់។ សិស្សរបស់អ្នកទើបតែប្រឡងតេស្តត្រៀមប្រឡងបឋមភូមិ (ឌីប្លូម) បានពិន្ទុ ${score} លើ ${total}។`;
+            // Construct the prompt directly into the text to avoid any schema incompatibility
+            let promptText = `(System Instruction: អ្នកគឺជាគ្រូបង្រៀនគណិតវិទ្យាថ្នាក់ទី៩ដ៏ពូកែនិងចេះលើកទឹកចិត្តម្នាក់។)\n\n`;
+            promptText += `សិស្សរបស់អ្នកទើបតែប្រឡងតេស្តត្រៀមប្រឡងបឋមភូមិ (ឌីប្លូម) បានពិន្ទុ ${score} លើ ${total}។\n`;
             
             if (score === total) {
-                prompt += ` គាត់ធ្វើត្រូវទាំងអស់។ សូមសរសេរពាក្យសរសើរយ៉ាងជ្រាលជ្រៅ និងលើកទឹកចិត្តឲ្យគាត់បន្តការព្យាយាម ដើម្បីទទួលបាននិទ្ទេសល្អក្នុងការប្រឡងពិតប្រាកដ។`;
+                promptText += `គាត់ធ្វើត្រូវទាំងអស់។ សូមសរសេរពាក្យសរសើរយ៉ាងជ្រាលជ្រៅ និងលើកទឹកចិត្តឲ្យគាត់បន្តការព្យាយាម ដើម្បីទទួលបាននិទ្ទេសល្អក្នុងការប្រឡងពិតប្រាកដ។`;
             } else if (score >= 15) {
-                 prompt += ` គាត់ធ្វើបានល្អបង្គួរ ប៉ុន្តែបានធ្វើខុសខ្លះៗលើមេរៀន/ចំណុចទាំងនេះ៖ ${wrongTopics.join(', ')}។ សូមសរសេរយោបល់លើកទឹកចិត្ត និងណែនាំគាត់ពីរបៀបរំលឹកមេរៀនចំណុចខ្សោយទាំងនេះបន្ថែម។`;
+                 promptText += `គាត់ធ្វើបានល្អបង្គួរ ប៉ុន្តែបានធ្វើខុសខ្លះៗលើមេរៀន/ចំណុចទាំងនេះ៖ ${wrongTopics.join(', ')}។ សូមសរសេរយោបល់លើកទឹកចិត្ត និងណែនាំគាត់ពីរបៀបរំលឹកមេរៀនចំណុចខ្សោយទាំងនេះបន្ថែម។`;
             } else {
-                prompt += ` គាត់ទទួលបានពិន្ទុខ្សោយ ដោយខុសច្រើនលើមេរៀន៖ ${wrongTopics.join(', ')}។ សូមសរសេរយោបល់លើកទឹកចិត្តកុំឲ្យគាត់បាក់ទឹកចិត្ត និងណែនាំពីរបៀបរៀនសូត្រពីមូលដ្ឋានគ្រឹះឡើងវិញ។`;
+                promptText += `គាត់ទទួលបានពិន្ទុខ្សោយ ដោយខុសច្រើនលើមេរៀន៖ ${wrongTopics.join(', ')}។ សូមសរសេរយោបល់លើកទឹកចិត្តកុំឲ្យគាត់បាក់ទឹកចិត្ត និងណែនាំពីរបៀបរៀនសូត្រពីមូលដ្ឋានគ្រឹះឡើងវិញ។`;
             }
             
-            prompt += ` សរសេរជាភាសាខ្មែរឲ្យបានពីរោះ ត្រឹមត្រូវ ខ្លីល្មម (ប្រហែល ៤ ទៅ ៥ របះ) ប្រើពាក្យសំដីដូចគ្រូនិយាយទៅកាន់សិស្ស។`;
+            promptText += `\n\nសូមសរសេរជាភាសាខ្មែរឲ្យបានពីរោះ ត្រឹមត្រូវ ខ្លីល្មម (ប្រហែល ៤ ទៅ ៥ របះ) ប្រើពាក្យសំដីដូចគ្រូនិយាយទៅកាន់សិស្ស។`;
 
             const payload = {
-                contents: [{ parts: [{ text: prompt }] }],
-                systemInstruction: { parts: [{ text: "You are a helpful and encouraging Cambodian High School Math Teacher." }] }
+                contents: [{ 
+                    role: "user",
+                    parts: [{ text: promptText }] 
+                }]
             };
 
             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
@@ -362,6 +365,7 @@
             let retries = 0;
             const maxRetries = 5;
             const delays = [1000, 2000, 4000, 8000, 16000];
+            let lastErrorMsg = "";
 
             while (retries < maxRetries) {
                 try {
@@ -372,28 +376,34 @@
                     });
 
                     if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
+                        const errData = await response.json().catch(() => ({}));
+                        throw new Error(`API Error ${response.status}: ${errData.error?.message || 'សូមពិនិត្យមើលបណ្ដាញភ្ជាប់អ៉ីនធឺណិត'}`);
                     }
 
                     const data = await response.json();
-                    const aiText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-
-                    if (aiText) {
-                        loadingDiv.classList.add('hidden');
-                        feedbackDiv.innerHTML = `<p>${aiText.replace(/\n/g, '<br>')}</p>`;
-                        feedbackDiv.classList.remove('hidden');
-                        return; // Success, exit loop
-                    } else {
-                        throw new Error("Invalid response format from API");
+                    
+                    if (data.candidates && data.candidates.length > 0) {
+                        const aiText = data.candidates[0].content?.parts?.[0]?.text;
+                        if (aiText) {
+                            loadingDiv.classList.add('hidden');
+                            feedbackDiv.innerHTML = `<p>${aiText.replace(/\n/g, '<br>')}</p>`;
+                            feedbackDiv.classList.remove('hidden');
+                            return; // Success, exit loop
+                        }
                     }
+                    
+                    throw new Error("ប្រព័ន្ធមិនមានទិន្នន័យឆ្លើយតបត្រឡប់មកវិញទេ។");
 
                 } catch (error) {
+                    lastErrorMsg = error.message;
                     retries++;
                     if (retries >= maxRetries) {
                         loadingDiv.classList.add('hidden');
-                        feedbackDiv.innerHTML = `<p class="text-red-500 font-bold">សូមអភ័យទោស លោកគ្រូ AI កំពុងរវល់មិនអាចជួយផ្ដល់យោបល់បាននៅពេលនេះទេ។ សូមអ្នកខិតខំប្រឹងប្រែងរៀនសូត្របន្តទៀត!</p>`;
+                        feedbackDiv.innerHTML = `<p class="text-red-500 font-bold mb-2">សូមអភ័យទោស លោកគ្រូ AI កំពុងរវល់មិនអាចជួយផ្ដល់យោបល់បាននៅពេលនេះទេ។ សូមអ្នកខិតខំប្រឹងប្រែងរៀនសូត្របន្តទៀត!</p>
+                        <p class="text-xs text-red-400 font-mono mt-2 p-2 bg-red-50 rounded border border-red-100">កូដបញ្ហា (Error): ${lastErrorMsg}</p>`;
                         feedbackDiv.classList.remove('hidden');
                     } else {
+                        // Wait before retrying
                         await new Promise(res => setTimeout(res, delays[retries - 1]));
                     }
                 }
