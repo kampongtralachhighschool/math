@@ -251,9 +251,10 @@
         quizData.forEach((item, index) => {
             let optionsHtml = '';
             item.options.forEach((opt, optIndex) => {
+                // Removed the 'required' attribute from inputs to allow partial submissions
                 optionsHtml += `
                     <label class="flex items-center p-4 border-2 border-gray-100 rounded-xl cursor-pointer hover:bg-blue-50 hover:border-blue-200 transition duration-200 group">
-                        <input type="radio" name="q${index}" value="${optIndex}" class="form-radio h-5 w-5 text-blue-600 focus:ring-blue-500" required>
+                        <input type="radio" name="q${index}" value="${optIndex}" class="form-radio h-5 w-5 text-blue-600 focus:ring-blue-500">
                         <span class="ml-3 text-gray-700 group-hover:text-blue-800 text-base md:text-lg">${opt}</span>
                     </label>
                 `;
@@ -275,11 +276,6 @@
             `;
             questionsList.insertAdjacentHTML('beforeend', qHtml);
         });
-
-        // Trigger MathJax to render equations
-        if(window.MathJax) {
-            MathJax.typesetPromise();
-        }
 
         // Handle Form Submission
         document.getElementById('quiz-form').addEventListener('submit', function(e) {
@@ -305,7 +301,9 @@
                     wrongTopics.push(item.topic);
                     qBlock.classList.add('border-red-400', 'bg-red-50');
                     qBlock.classList.remove('border-gray-200', 'bg-white');
-                    feedbackDiv.innerHTML = `❌ ចម្លើយខុស។ ចម្លើយដែលត្រឹមត្រូវគឺ: <span class="font-bold">${item.options[item.correct]}</span>`;
+                    
+                    let statusText = selected ? 'ចម្លើយខុស' : 'មិនបានឆ្លើយ';
+                    feedbackDiv.innerHTML = `❌ ${statusText}។ ចម្លើយដែលត្រឹមត្រូវគឺ: <span class="font-bold">${item.options[item.correct]}</span>`;
                     feedbackDiv.classList.add('text-red-700', 'bg-red-100');
                 }
 
@@ -313,6 +311,11 @@
                 const inputs = document.querySelectorAll(`input[name="q${index}"]`);
                 inputs.forEach(input => input.disabled = true);
             });
+
+            // Re-render MathJax to display the correct answers properly
+            if(typeof MathJax !== 'undefined' && typeof MathJax.typesetPromise === 'function') {
+                MathJax.typesetPromise().catch((err) => console.error('MathJax error: ', err));
+            }
 
             // Remove duplicates from wrong topics so AI doesn't get overwhelmed
             wrongTopics = [...new Set(wrongTopics)];
