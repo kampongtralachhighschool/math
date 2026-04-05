@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>កម្រងសំណួរពហុជ្រើសរើស៖ លីមីត</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- MathJax for rendering LaTeX equations -->
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
+    </script>
+    <!-- Google Fonts for better Khmer typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Battambang', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .option-label {
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+        .option-label:hover {
+            background-color: #e5e7eb;
+        }
+        input[type="radio"]:checked + span {
+            font-weight: bold;
+            color: #2563eb;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <div class="max-w-3xl mx-auto p-6 my-10 bg-white rounded-2xl shadow-lg">
+        <div class="text-center mb-8 border-b pb-4">
+            <h1 class="text-3xl font-bold text-blue-700 mb-2">កម្រងសំណួរពហុជ្រើសរើស៖ លីមីត</h1>
+            <p class="text-gray-600 text-lg"><strong>ការណែនាំ៖</strong> <span class="text-red-600 font-bold">ចូរ</span>ជ្រើសរើសចម្លើយដែលត្រឹមត្រូវបំផុតសម្រាប់លំហាត់នីមួយៗ រួចចុចប៊ូតុង "ផ្ញើចម្លើយ" នៅខាងក្រោម។</p>
+        </div>
+
+        <form id="quizForm" class="space-y-8">
+            <div id="quizContainer">
+                <!-- Quiz questions will be injected here by JavaScript -->
+            </div>
+
+            <div class="mt-8 flex justify-between items-center border-t pt-6">
+                <div id="resultDisplay" class="text-xl font-bold hidden">
+                    <!-- Result will show here -->
+                </div>
+                <button type="button" id="submitBtn" onclick="submitQuiz()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition duration-300">
+                    ផ្ញើចម្លើយ
+                </button>
+                <button type="button" id="retryBtn" onclick="resetQuiz()" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-8 rounded-lg shadow-md transition duration-300 hidden">
+                    ធ្វើម្ដងទៀត
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Quiz Data containing limits, options, and correct index
+        const quizData = [
+            { question: "គណនាលីមីតខាងក្រោម៖ $$\\lim_{x \\to 2} \\frac{x^2 - 4}{x - 2}$$", options: ["$0$", "$2$", "$4$", "$+\\infty$"], correct: 2 },
+            { question: "គណនាលីមីតខាងក្រោម៖ $$\\lim_{x \\to 1} \\frac{x^2 + 2x - 3}{x^2 - 1}$$", options: ["$1$", "$2$", "$3$", "$4$"], correct: 1 },
+            { question: "គណនាលីមីតខាងក្រោម៖ $$\\lim_{x \\to -2} \\frac{x^3 + 8}{x^2 + 3x + 2}$$", options: ["$-12$", "$-4$", "$0$", "$12$"], correct: 0 },
+            { question: "គណនាលីមីតខាងក្រោម៖ $$\\lim_{x \\to 3} \\frac{x^3 - 27}{x^2 - 5x + 6}$$", options: ["$9$", "$18$", "$27$", "$36$"], correct: 2 },
+            { question: "គណនាលីមីតខាងក្រោម៖ $$\\lim_{x \\to \\frac{1}{2}} \\frac{2x^2 + x - 1}{4x^2 - 1}$$", options: ["$\\frac{1}{4}$", "$\\frac{1}{2}$", "$\\frac{3}{4}$", "$1$"], correct: 2 },
+            { question: "គណនាលីមីតខាងក្រោម៖ $$\\lim_{x \\to 1} \\frac{x^4 - 1}{x^3 - 1}$$", options: ["$1$", "$\\frac{4}{3}$", "$\\frac{3}{4}$", "$0$"], correct: 1 },
+            { question: "គណនាលីមីតខាងក្រោម៖ $$\\lim_{x \\to 4} \\frac{\\sqrt{x} - 2}{x - 4}$$", options: ["$\\frac{1}{4}$", "$\\frac{1}{2}$", "$0$", "$4$"], correct: 0 },
+            { question: "គណនាលីមីតខាងក្រោម៖ $$\\lim_{x \\to 0} \\frac{\\sqrt{x+1} - 1}{x}$$", options: ["$0$", "$\\frac{1}{2}$", "$1$", "$+\\infty$"], correct: 1 },
+            { question: "គណនាលីមីតខាងក្រោម៖ $$\\lim_{x \\to 2} \\frac{\\sqrt{2x+5} - 3}{x - 2}$$", options: ["$\\frac{1}{6}$", "$\\frac{1}{3}$", "$\\frac{2}{3}$", "$1$"], correct: 1 },
+            { question: "គណនាលីមីតខាងក្រោម៖ $$\\lim_{x \\to 3} \\frac{x^2 - 9}{\\sqrt{x+6} - 3}$$", options: ["$12$", "$18$", "$36$", "$0$"], correct: 2 },
+            { question: "គណនាលីមីតខាងក្រោម៖ $$\\lim_{x \\to 0} \\frac{\\sqrt{1+x} - \\sqrt{1-x}}{x}$$", options: ["$0$", "$\\frac{1}{2}$", "$1$", "$2$"], correct: 2 },
+            { question: "គណនាលីមីតខាងក្រោម៖ $$\\lim_{x \\to 7} \\frac{2 - \\sqrt{x-3}}{x^2 - 49}$$", options: ["$-\\frac{1}{56}$", "$\\frac{1}{56}$", "$-\\frac{1}{28}$", "$0$"], correct: 0 },
+            { question: "គណនាលីមីតខាងក្រោម៖ $$\\lim_{x \\to 1} \\frac{\\sqrt[3]{x} - 1}{x - 1}$$", options: ["$1$", "$\\frac{1}{2}$", "$\\frac{1}{3}$", "$0$"], correct: 2 },
+            { question: "គណនាលីមីតខាងក្រោម៖ $$\\lim_{x \\to 8} \\frac{\\sqrt[3]{x} - 2}{x - 8}$$", options: ["$\\frac{1}{4}$", "$\\frac{1}{6}$", "$\\frac{1}{8}$", "$\\frac{1}{12}$"], correct: 3 },
+            { question: "គណនាលីមីតខាងក្រោម៖ $$\\lim_{x \\to +\\infty} \\frac{3x^2 - 5x + 2}{2x^2 + x - 1}$$", options: ["$0$", "$\\frac{2}{3}$", "$\\frac{3}{2}$", "$+\\infty$"], correct: 2 },
+            { question: "គណនាលីមីតខាងក្រោម៖ $$\\lim_{x \\to -\\infty} \\frac{4x^3 - x^2 + 1}{5x^3 + 2x}$$", options: ["$-\\frac{4}{5}$", "$\\frac{4}{5}$", "$0$", "$-\\infty$"], correct: 1 },
+            { question: "គណនាលីមីតខាងក្រោម៖ $$\\lim_{x \\to +\\infty} \\frac{\\sqrt{x^2 + 1}}{x + 1}$$", options: ["$-1$", "$0$", "$1$", "$+\\infty$"], correct: 2 },
+            { question: "គណនាលីមីតខាងក្រោម៖ $$\\lim_{x \\to -\\infty} \\frac{\\sqrt{4x^2 - 2x + 1}}{x - 3}$$", options: ["$2$", "$-2$", "$4$", "$-4$"], correct: 1 },
+            { question: "គណនាលីមីតខាងក្រោម៖ $$\\lim_{x \\to +\\infty} (\\sqrt{x^2 + 4x} - x)$$", options: ["$0$", "$2$", "$4$", "$+\\infty$"], correct: 1 },
+            { question: "គណនាលីមីតខាងក្រោម៖ $$\\lim_{x \\to +\\infty} (\\sqrt{9x^2 + 6x - 1} - 3x)$$", options: ["$0$", "$1$", "$3$", "$+\\infty$"], correct: 1 },
+            { question: "គណនាលីមីតខាងក្រោម៖ $$\\lim_{x \\to -\\infty} (\\sqrt{x^2 - x} + x)$$", options: ["$-\\frac{1}{2}$", "$0$", "$\\frac{1}{2}$", "$+\\infty$"], correct: 2 },
+            { question: "គណនាលីមីតខាងក្រោម៖ $$\\lim_{x \\to 1} \\frac{\\sqrt{x} - 1}{\\sqrt[3]{x} - 1}$$", options: ["$1$", "$\\frac{2}{3}$", "$\\frac{3}{2}$", "$0$"], correct: 2 },
+            { question: "គណនាលីមីតខាងក្រោម៖ $$\\lim_{x \\to 0} \\frac{\\sqrt[3]{1+x} - \\sqrt{1+x}}{x}$$", options: ["$-\\frac{1}{6}$", "$\\frac{1}{6}$", "$-\\frac{1}{2}$", "$0$"], correct: 0 },
+            { question: "គណនាលីមីតខាងក្រោម៖ $$\\lim_{x \\to +\\infty} x \\left(\\sqrt{x^2+1} - x\\right)$$", options: ["$0$", "$\\frac{1}{2}$", "$1$", "$+\\infty$"], correct: 1 },
+            { question: "គណនាលីមីតខាងក្រោម៖ $$\\lim_{x \\to 2} \\frac{\\sqrt{x+2} - 2}{\\sqrt{2x+5} - 3}$$", options: ["$\\frac{1}{4}$", "$\\frac{1}{2}$", "$\\frac{3}{4}$", "$1$"], correct: 2 }
+        ];
+
+        // Function to render the quiz
+        function renderQuiz() {
+            const container = document.getElementById('quizContainer');
+            container.innerHTML = ''; // Clear existing
+
+            quizData.forEach((q, qIndex) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'bg-gray-50 p-6 rounded-xl border border-gray-200';
+                questionDiv.id = `questionCard-${qIndex}`;
+
+                // Question Title
+                const questionTitle = document.createElement('h3');
+                questionTitle.className = 'text-lg font-bold mb-4 text-gray-800';
+                questionTitle.innerHTML = `<span class="text-blue-600">សំណួរទី ${qIndex + 1}៖</span> ${q.question}`;
+                questionDiv.appendChild(questionTitle);
+
+                // Options Container
+                const optionsGrid = document.createElement('div');
+                optionsGrid.className = 'grid grid-cols-1 md:grid-cols-2 gap-4';
+
+                const optionLetters = ['ក', 'ខ', 'គ', 'ឃ'];
+
+                q.options.forEach((opt, oIndex) => {
+                    const optionLabel = document.createElement('label');
+                    optionLabel.className = 'option-label flex items-center p-4 border rounded-lg bg-white';
+                    
+                    const optionInput = document.createElement('input');
+                    optionInput.type = 'radio';
+                    optionInput.name = `question${qIndex}`;
+                    optionInput.value = oIndex;
+                    optionInput.className = 'w-5 h-5 text-blue-600 focus:ring-blue-500 mr-3';
+
+                    const optionText = document.createElement('span');
+                    optionText.className = 'text-gray-700 text-lg';
+                    optionText.innerHTML = `<strong>${optionLetters[oIndex]}.</strong> ${opt}`;
+
+                    optionLabel.appendChild(optionInput);
+                    optionLabel.appendChild(optionText);
+                    optionsGrid.appendChild(optionLabel);
+                });
+
+                questionDiv.appendChild(optionsGrid);
+                
+                // Feedback div (hidden initially)
+                const feedbackDiv = document.createElement('div');
+                feedbackDiv.id = `feedback-${qIndex}`;
+                feedbackDiv.className = 'mt-4 font-bold text-lg hidden';
+                questionDiv.appendChild(feedbackDiv);
+
+                container.appendChild(questionDiv);
+            });
+
+            // Trigger MathJax to render equations in newly added elements
+            if (window.MathJax) {
+                MathJax.typesetPromise();
+            }
+        }
+
+        // Function to submit and calculate score
+        function submitQuiz() {
+            let score = 0;
+            let allAnswered = true;
+
+            quizData.forEach((q, qIndex) => {
+                const selectedOption = document.querySelector(`input[name="question${qIndex}"]:checked`);
+                const questionCard = document.getElementById(`questionCard-${qIndex}`);
+                const feedbackDiv = document.getElementById(`feedback-${qIndex}`);
+                
+                if (!selectedOption) {
+                    allAnswered = false;
+                } else {
+                    const selectedValue = parseInt(selectedOption.value);
+                    feedbackDiv.classList.remove('hidden');
+
+                    if (selectedValue === q.correct) {
+                        score++;
+                        questionCard.classList.add('bg-green-50', 'border-green-400');
+                        questionCard.classList.remove('bg-gray-50', 'border-gray-200', 'bg-red-50', 'border-red-400');
+                        feedbackDiv.innerHTML = '✅ ត្រឹមត្រូវ!';
+                        feedbackDiv.classList.add('text-green-600');
+                        feedbackDiv.classList.remove('text-red-600');
+                    } else {
+                        questionCard.classList.add('bg-red-50', 'border-red-400');
+                        questionCard.classList.remove('bg-gray-50', 'border-gray-200', 'bg-green-50', 'border-green-400');
+                        feedbackDiv.innerHTML = `❌ មិនត្រឹមត្រូវ! ចម្លើយពិតប្រាកដគឺជម្រើសទី ${q.correct + 1}។`;
+                        feedbackDiv.classList.add('text-red-600');
+                        feedbackDiv.classList.remove('text-green-600');
+                    }
+                    
+                    // Disable inputs after submit
+                    const inputs = document.querySelectorAll(`input[name="question${qIndex}"]`);
+                    inputs.forEach(input => input.disabled = true);
+                }
+            });
+
+            if (!allAnswered) {
+                alert("សូមមេត្តាឆ្លើយគ្រប់សំណួរទាំងអស់មុននឹងបញ្ជូន!");
+                return;
+            }
+
+            // Display Results
+            const resultDisplay = document.getElementById('resultDisplay');
+            resultDisplay.innerHTML = `អ្នកទទួលបានពិន្ទុ៖ <span class="text-blue-600 text-3xl">${score} / ${quizData.length}</span>`;
+            resultDisplay.classList.remove('hidden');
+
+            document.getElementById('submitBtn').classList.add('hidden');
+            document.getElementById('retryBtn').classList.remove('hidden');
+        }
+
+        // Function to reset the quiz
+        function resetQuiz() {
+            document.getElementById('resultDisplay').classList.add('hidden');
+            document.getElementById('submitBtn').classList.remove('hidden');
+            document.getElementById('retryBtn').classList.add('hidden');
+            renderQuiz();
+        }
+
+        // Initialize quiz on load
+        window.onload = renderQuiz;
+    </script>
+</body>
+</html>
