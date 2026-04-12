@@ -8,26 +8,27 @@
     <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] } };
     </script>
     <style>
-        body { font-family: 'Kantumruy Pro', sans-serif; background-color: #f3f4f6; }
+        body { font-family: 'Kantumruy Pro', sans-serif; background-color: #f3f4f6; scroll-behavior: smooth; }
         .math-text { font-family: 'Times New Roman', serif; }
         
         /* Fixed Print Styles for Page Breaks */
         @media print {
             body { background-color: white; }
             .no-print { display: none !important; }
-            section { page-break-inside: auto; } /* Allow sections to span multiple pages */
-            /* Force individual cards to stay together */
+            section { page-break-inside: auto; }
             .keep-together { page-break-inside: avoid; break-inside: avoid; }
             .shadow-lg, .shadow-md { box-shadow: none !important; border: 1px solid #e5e7eb; }
             h2 { page-break-after: avoid; }
         }
     </style>
 </head>
-<body class="text-gray-800 p-4 md:p-8" onload="checkClassParams()">
+<body class="text-gray-800 p-4 md:p-8">
 
     <!-- Header Section -->
     <div class="max-w-5xl mx-auto bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-2xl p-8 mb-10 shadow-xl keep-together">
@@ -51,28 +52,74 @@
         </div>
     </div>
 
-    <!-- Teacher Invite Modal -->
-    <div id="teacher-modal" class="fixed inset-0 bg-gray-900 bg-opacity-95 z-50 hidden flex items-center justify-center no-print">
-        <div class="bg-white p-8 rounded-2xl max-w-md w-full mx-4 shadow-2xl">
-            <h2 class="text-2xl font-bold text-emerald-600 mb-4">បង្កើតតំណភ្ជាប់សម្រាប់សិស្ស</h2>
-            <p class="text-gray-600 mb-4">សូមបញ្ចូលឈ្មោះថ្នាក់របស់អ្នក ដើម្បីបង្កើត Link សម្រាប់ចែកចាយឲ្យសិស្សធ្វើតេស្ត និងងាយស្រួលប្រមូលលទ្ធផល។</p>
-            <input type="text" id="teacher-class-name" placeholder="ឧទាហរណ៍៖ ថ្នាក់ 12A ឬ ថ្នាក់បំប៉នចុងសប្តាហ៍" class="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:ring-2 focus:ring-emerald-500 outline-none">
+    <!-- Floating Back Button (hidden by default) -->
+    <button id="back-to-results-btn" onclick="restoreResults()" class="hidden fixed bottom-6 right-6 bg-indigo-600 text-white px-6 py-3 rounded-full shadow-2xl font-bold z-40 hover:bg-indigo-700 transition transform hover:scale-105 no-print">
+        🔙 មើលលទ្ធផលតេស្តវិញ
+    </button>
+
+    <!-- Teacher Admin Modal -->
+    <div id="teacher-modal" class="fixed inset-0 bg-gray-900 bg-opacity-95 z-50 hidden flex items-center justify-center no-print p-4">
+        <div class="bg-white rounded-2xl max-w-2xl w-full shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
             
-            <div id="invite-link-container" class="hidden mb-4">
-                <p class="text-sm font-bold text-gray-700 mb-1">តំណភ្ជាប់របស់អ្នក៖</p>
-                <div class="flex">
-                    <input type="text" id="invite-link-input" readonly class="w-full p-2 bg-gray-100 border border-gray-300 rounded-l-lg text-sm text-gray-600 outline-none">
-                    <button onclick="copyInviteLink()" class="bg-emerald-600 text-white px-4 py-2 rounded-r-lg font-bold hover:bg-emerald-700">ចម្លង</button>
+            <!-- Modal Header / Tabs -->
+            <div class="flex bg-gray-100 border-b border-gray-300">
+                <button id="tab-btn-invite" onclick="switchTeacherTab('invite')" class="flex-1 py-4 font-bold text-emerald-700 border-b-4 border-emerald-500 bg-white">🔗 បង្កើតតំណភ្ជាប់</button>
+                <button id="tab-btn-results" onclick="switchTeacherTab('results')" class="flex-1 py-4 font-bold text-gray-500 hover:text-emerald-600">📊 មើលលទ្ធផលសិស្ស</button>
+            </div>
+
+            <!-- Tab Content: Invite -->
+            <div id="tab-invite" class="p-6 md:p-8 overflow-y-auto">
+                <h2 class="text-2xl font-bold text-emerald-600 mb-4">បង្កើតតំណភ្ជាប់សម្រាប់សិស្ស</h2>
+                <p class="text-gray-600 mb-4">សូមបញ្ចូលឈ្មោះថ្នាក់របស់អ្នក ដើម្បីបង្កើត Link សម្រាប់ចែកចាយឲ្យសិស្សធ្វើតេស្ត។ ពេលសិស្សធ្វើចប់ លទ្ធផលនឹងចូលមកក្នុង Database នេះ។</p>
+                <input type="text" id="teacher-class-name" placeholder="ឧទាហរណ៍៖ ថ្នាក់ 12A ឬ ថ្នាក់បំប៉នចុងសប្តាហ៍" class="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:ring-2 focus:ring-emerald-500 outline-none">
+                
+                <div id="invite-link-container" class="hidden mb-4">
+                    <p class="text-sm font-bold text-gray-700 mb-1">តំណភ្ជាប់របស់អ្នក៖</p>
+                    <div class="flex">
+                        <input type="text" id="invite-link-input" readonly class="w-full p-2 bg-gray-100 border border-gray-300 rounded-l-lg text-sm text-gray-600 outline-none">
+                        <button onclick="copyInviteLink()" class="bg-emerald-600 text-white px-4 py-2 rounded-r-lg font-bold hover:bg-emerald-700">ចម្លង</button>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-3 mt-6">
+                    <button onclick="closeTeacherModal()" class="px-4 py-2 text-gray-600 hover:text-gray-800 font-bold bg-gray-200 rounded-lg">បិទ</button>
+                    <button onclick="generateInvite()" class="bg-emerald-500 text-white px-6 py-2 rounded-lg font-bold hover:bg-emerald-600">បង្កើត Link</button>
                 </div>
             </div>
 
-            <div class="flex justify-end gap-3 mt-6">
-                <button onclick="closeTeacherModal()" class="px-4 py-2 text-gray-600 hover:text-gray-800 font-bold">បិទ</button>
-                <button onclick="generateInvite()" class="bg-emerald-500 text-white px-6 py-2 rounded-lg font-bold hover:bg-emerald-600">បង្កើត Link</button>
+            <!-- Tab Content: Results -->
+            <div id="tab-results" class="p-6 md:p-8 hidden overflow-y-auto flex-1">
+                <h2 class="text-2xl font-bold text-emerald-600 mb-4">ទិន្នន័យលទ្ធផលសិស្ស</h2>
+                <div class="flex gap-2 mb-4">
+                    <input type="text" id="search-class-name" placeholder="ស្វែងរកតាមឈ្មោះថ្នាក់ (ឧ. 12A)" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
+                    <button onclick="fetchResults()" class="bg-emerald-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-emerald-700 whitespace-nowrap">ស្វែងរក</button>
+                </div>
+                
+                <div class="overflow-x-auto bg-gray-50 rounded-lg border border-gray-200">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-200 text-gray-700 text-sm">
+                                <th class="p-3 border-b">លេខ/ឈ្មោះសិស្ស</th>
+                                <th class="p-3 border-b text-center">ពិន្ទុ</th>
+                                <th class="p-3 border-b text-center">និទ្ទេស</th>
+                                <th class="p-3 border-b">ចំណុចខ្សោយ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="results-table-body">
+                            <tr><td colspan="4" class="p-4 text-center text-gray-500">សូមវាយឈ្មោះថ្នាក់ រួចចុច "ស្វែងរក"</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="flex justify-end mt-6">
+                    <button onclick="closeTeacherModal()" class="px-4 py-2 text-gray-600 hover:text-gray-800 font-bold bg-gray-200 rounded-lg">បិទផ្ទាំង</button>
+                </div>
             </div>
+
         </div>
     </div>
 
+    <!-- MAIN LESSON CONTENT -->
     <div class="max-w-5xl mx-auto space-y-12">
 
         <!-- ================= RULE 1 ================= -->
@@ -290,9 +337,24 @@
     </div>
 
     <script>
-        // Global variables for tracking
+        // Supabase Initialization
+        const supabaseUrl = 'https://ebrqxhbdvdsijdxjxpej.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVicnF4aGJkdmRzaWpkeGp4cGVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5NjQxMjEsImV4cCI6MjA5MTU0MDEyMX0.3qXo5-h2zmypSrhsIh1dqrkWHeZA_1J4CA7C1jW_23A';
+        // Renamed variable to supabaseClient to prevent conflict with globally loaded window.supabase
+        const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        // Global variables
         let globalClassName = "";
+        let isResultView = false; // Track if user is looking at results
+        let userAnswers = new Array(24).fill(null);
         
+        // Ensure DOM is fully loaded before initializing
+        document.addEventListener('DOMContentLoaded', initApp);
+
+        function initApp() {
+            checkClassParams();
+        }
+
         function checkClassParams() {
             const urlParams = new URLSearchParams(window.location.search);
             const className = urlParams.get('c');
@@ -303,21 +365,38 @@
             }
         }
 
+        // ---- Teacher Modal Logic ----
         function openTeacherModal() {
             document.getElementById('teacher-modal').classList.remove('hidden');
+            switchTeacherTab('invite');
         }
 
         function closeTeacherModal() {
             document.getElementById('teacher-modal').classList.add('hidden');
-            document.getElementById('invite-link-container').classList.add('hidden');
-            document.getElementById('teacher-class-name').value = '';
+        }
+
+        function switchTeacherTab(tab) {
+            if(tab === 'invite') {
+                document.getElementById('tab-invite').classList.remove('hidden');
+                document.getElementById('tab-results').classList.add('hidden');
+                document.getElementById('tab-btn-invite').classList.add('text-emerald-700', 'border-b-4', 'border-emerald-500', 'bg-white');
+                document.getElementById('tab-btn-invite').classList.remove('text-gray-500', 'hover:text-emerald-600');
+                document.getElementById('tab-btn-results').classList.remove('text-emerald-700', 'border-b-4', 'border-emerald-500', 'bg-white');
+                document.getElementById('tab-btn-results').classList.add('text-gray-500', 'hover:text-emerald-600');
+            } else {
+                document.getElementById('tab-invite').classList.add('hidden');
+                document.getElementById('tab-results').classList.remove('hidden');
+                document.getElementById('tab-btn-results').classList.add('text-emerald-700', 'border-b-4', 'border-emerald-500', 'bg-white');
+                document.getElementById('tab-btn-results').classList.remove('text-gray-500', 'hover:text-emerald-600');
+                document.getElementById('tab-btn-invite').classList.remove('text-emerald-700', 'border-b-4', 'border-emerald-500', 'bg-white');
+                document.getElementById('tab-btn-invite').classList.add('text-gray-500', 'hover:text-emerald-600');
+            }
         }
 
         function generateInvite() {
             const className = document.getElementById('teacher-class-name').value.trim();
             if(!className) return alert('សូមបញ្ចូលឈ្មោះថ្នាក់!');
             
-            // Generate link without existing parameters, add the new class parameter
             const baseUrl = window.location.href.split('?')[0];
             const inviteUrl = `${baseUrl}?c=${encodeURIComponent(className)}`;
             
@@ -333,6 +412,55 @@
             alert("តំណភ្ជាប់ត្រូវបានចម្លង! លោកគ្រូអ្នកគ្រូអាចផ្ញើវាទៅក្នុង Group Telegram របស់សិស្សបាន។");
         }
 
+        async function fetchResults() {
+            const searchClass = document.getElementById('search-class-name').value.trim();
+            const tbody = document.getElementById('results-table-body');
+            
+            if(!searchClass) {
+                alert("សូមវាយឈ្មោះថ្នាក់ដើម្បីស្វែងរក!");
+                return;
+            }
+
+            tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-gray-500">កំពុងទាញទិន្នន័យពី Database...</td></tr>';
+            
+            try {
+                // Fetch using the renamed variable 'supabaseClient'
+                const { data, error } = await supabaseClient
+                    .from('quiz_results')
+                    .select('*')
+                    .ilike('class_name', `%${searchClass}%`)
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+
+                if(data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-red-500">មិនមានទិន្នន័យសម្រាប់ថ្នាក់នេះទេ!</td></tr>';
+                    return;
+                }
+
+                let rows = '';
+                data.forEach(row => {
+                    let stInfo = row.student_name;
+                    if(row.student_id && row.student_id !== '-') stInfo = `[${row.student_id}] ${row.student_name}`;
+                    
+                    rows += `
+                        <tr class="border-b hover:bg-gray-100">
+                            <td class="p-3">${stInfo}</td>
+                            <td class="p-3 text-center font-bold">${row.score}/24</td>
+                            <td class="p-3 text-center font-bold ${row.grade.includes('F') ? 'text-red-600' : 'text-emerald-600'}">${row.grade}</td>
+                            <td class="p-3 text-sm text-gray-600">${row.weaknesses}</td>
+                        </tr>
+                    `;
+                });
+                tbody.innerHTML = rows;
+
+            } catch (err) {
+                console.error("Error fetching:", err);
+                tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-red-500">មានបញ្ហាក្នុងការទាញទិន្នន័យ។ សូមពិនិត្យ Database ។</td></tr>';
+            }
+        }
+
+        // ---- Quiz Logic ----
         const quizData = [
             // Rule 1
             { q: "ថង់មួយមានបាល់ក្រហម ៣ និងខៀវ ២។ ចាប់២ព្រមគ្នា។ រកប្រូបាបបានក្រហម២។", options: ["$3/10$", "$1/10$", "$3/5$", "$1/5$"], correct: 0, rule: 1 },
@@ -359,16 +487,20 @@
             { q: "ក្រុងមួយ ៦០% មានឡាន, ៣០% មានម៉ូតូ, ២០% មានទាំង២។ ជួបអ្នកមានឡានម្នាក់ រកប្រូបាបគាត់មានម៉ូតូ។", options: ["$1/2$", "$1/3$", "$2/3$", "$1/5$"], correct: 1, rule: 5 },
             { q: "បោះឡុកឡាក់២គ្រាប់។ ដឹងថាផលបូកស្មើ ៦។ រកប្រូបាបបានមុខលេខ៣ទាំង២គ្រាប់។", options: ["$1/5$", "$1/6$", "$1/36$", "$1/3$"], correct: 0, rule: 5 },
             { q: "ថង់មានបាល់ស ៣ ខ្មៅ ២។ ទាញ២បន្តបន្ទាប់។ ដឹងថាទី១ស។ រកប្រូបាបទី២ខ្មៅ។", options: ["$1/2$", "$2/5$", "$3/5$", "$1/4$"], correct: 0, rule: 5 },
-            // Rule 6 (Permutation)
+            // Rule 6
             { q: "តម្រៀបមនុស្ស ៤នាក់អង្គុយកៅអី៤។ ប្រូបាបដែល ក និង ខ អង្គុយចុងសងខាង?", options: ["$1/12$", "$1/6$", "$1/4$", "$1/2$"], correct: 1, rule: 6 },
             { q: "បង្កើតលេខ ២ខ្ទង់ពី {1, 2, 3, 4}។ ប្រូបាបបានចំនួនគូ?", options: ["$1/2$", "$1/3$", "$1/4$", "$2/3$"], correct: 0, rule: 6 },
             { q: "រើសប្រធាន និងអនុប្រធាន ពីមនុស្ស ៥នាក់ (ប្រុស៣ ស្រី២)។ ប្រូបាបបានស្រីទាំង២?", options: ["$1/10$", "$1/5$", "$2/5$", "$3/10$"], correct: 0, rule: 6 },
             { q: "ពាក្យ 'MATH' តម្រៀបជាថ្មី។ ប្រូបាបដែលចាប់ផ្ដើមដោយអក្សរ M?", options: ["$1/4$", "$1/12$", "$1/6$", "$1/24$"], correct: 0, rule: 6 }
         ];
 
-        let userAnswers = new Array(24).fill(null);
-
         function openQuiz() {
+            if(isResultView) {
+                // Return to results view if already completed
+                document.getElementById('quiz-modal').classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+                return;
+            }
             document.getElementById('quiz-modal').classList.remove('hidden');
             document.body.style.overflow = 'hidden'; 
             renderQuiz();
@@ -384,6 +516,7 @@
         }
 
         function renderQuiz() {
+            isResultView = false;
             let html = '';
             
             // Student Info Form
@@ -427,7 +560,7 @@
             MathJax.typesetPromise();
         }
 
-        function submitQuiz() {
+        async function submitQuiz() {
             // Get student info
             const stName = document.getElementById('studentName') ? document.getElementById('studentName').value.trim() : 'មិនបញ្ជាក់';
             const stId = document.getElementById('studentId') ? document.getElementById('studentId').value.trim() : '-';
@@ -443,16 +576,17 @@
                 }
             });
 
+            // កែសម្រួលនិទ្ទេសថ្មីតាមស្តង់ដាបាក់ឌុប
             let grade = '';
             let color = '';
-            if (score >= 21) { grade = 'A (ល្អណាស់)'; color = 'text-green-600'; }
-            else if (score >= 17) { grade = 'B (ល្អ)'; color = 'text-blue-600'; }
-            else if (score >= 13) { grade = 'C (បង្គួរ)'; color = 'text-yellow-600'; }
-            else if (score >= 10) { grade = 'D (មធ្យម)'; color = 'text-orange-500'; }
-            else if (score >= 6) { grade = 'E (ខ្សោយ)'; color = 'text-red-500'; }
-            else { grade = 'F (ធ្លាក់)'; color = 'text-red-700'; }
+            if (score >= 21) { grade = 'A (ល្អណាស់)'; color = 'text-green-600'; }      // >= 85%
+            else if (score >= 19) { grade = 'B (ល្អ)'; color = 'text-blue-600'; }       // >= 80%
+            else if (score >= 16) { grade = 'C (បង្គួរ)'; color = 'text-yellow-600'; }   // >= 65%
+            else if (score >= 14) { grade = 'D (មធ្យម)'; color = 'text-orange-500'; }   // >= 58%
+            else if (score >= 12) { grade = 'E (ខ្សោយ)'; color = 'text-red-500'; }      // >= 50%
+            else { grade = 'F (ធ្លាក់)'; color = 'text-red-700'; }                       // < 50%
 
-            // Generate report text for copying
+            // Generate Weakness text
             let weakAreas = [];
             for (let r = 1; r <= 6; r++) {
                 if (wrongPerRule[r] > 0) weakAreas.push(`ក្បួនទី${r}`);
@@ -466,11 +600,31 @@
                              `🎓 និទ្ទេស: ${grade.split(' ')[0]}\n` +
                              `⚠️ ចំណុចខ្សោយ: ${weakText}`;
 
+            // Save to Supabase using 'supabaseClient'
+            if(stName !== 'មិនបញ្ជាក់') {
+                try {
+                    const { error } = await supabaseClient.from('quiz_results').insert([{
+                        student_name: stName,
+                        student_id: stId,
+                        class_name: globalClassName || 'ទូទៅ',
+                        score: score,
+                        grade: grade.split(' ')[0],
+                        weaknesses: weakText
+                    }]);
+                    if (error) console.error("Error saving to DB:", error);
+                } catch (err) {
+                    console.error("Supabase Error:", err);
+                }
+            }
+
+            // Build Results UI
+            isResultView = true;
             let resultHtml = `
                 <div class="bg-indigo-50 p-6 rounded-xl border border-indigo-200 mb-8 flex flex-col md:flex-row justify-between items-center gap-4">
                     <div>
-                        <p class="text-lg"><span class="font-bold text-gray-700">សិស្ស៖</span> ${stName || 'មិនបញ្ជាក់'} ${stId ? `(លេខ: ${stId})` : ''}</p>
+                        <p class="text-lg"><span class="font-bold text-gray-700">សិស្ស៖</span> ${stName || 'មិនបញ្ជាក់'} ${stId !== '-' ? `(លេខ: ${stId})` : ''}</p>
                         ${globalClassName ? `<p class="text-lg"><span class="font-bold text-gray-700">ថ្នាក់៖</span> ${globalClassName}</p>` : ''}
+                        ${stName !== 'មិនបញ្ជាក់' ? `<p class="text-sm text-emerald-600 mt-2 font-bold">✔️ លទ្ធផលត្រូវបានរក្សាទុកក្នុង Database ដោយជោគជ័យ!</p>` : ''}
                     </div>
                     <button onclick='copyResultText(\`${reportText}\`)' class="bg-emerald-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-emerald-700 shadow flex items-center">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
@@ -486,7 +640,6 @@
             `;
 
             let hasWeakness = Object.values(wrongPerRule).some(val => val > 0);
-            
             if (hasWeakness) {
                 resultHtml += `<div class="bg-red-50 p-6 rounded-xl border border-red-200 shadow-sm">
                     <h4 class="text-xl font-bold text-red-700 mb-4">ចំណុចខ្សោយដែលត្រូវរំលឹកឡើងវិញ៖</h4>
@@ -494,7 +647,7 @@
                 
                 for (let r = 1; r <= 6; r++) {
                     if (wrongPerRule[r] > 0) {
-                        resultHtml += `<li>ក្បួនទី ${r} (ខុស ${wrongPerRule[r]} លំហាត់): <a href="#rule-${r}" onclick="closeQuiz()" class="text-blue-600 font-bold hover:underline">រំលឹកមេរៀនទី ${r} ឡើងវិញ 👉</a></li>`;
+                        resultHtml += `<li>ក្បួនទី ${r} (ខុស ${wrongPerRule[r]} លំហាត់): <a href="javascript:void(0)" onclick="goToRule(${r})" class="text-blue-600 font-bold hover:underline">រំលឹកមេរៀនទី ${r} ឡើងវិញ 👉</a></li>`;
                     }
                 }
                 resultHtml += `</ul></div>`;
@@ -506,7 +659,6 @@
 
             resultHtml += `
                 <div class="text-center mt-8">
-                    <button onclick="renderQuiz()" class="bg-gray-200 text-gray-800 px-6 py-2 rounded-full font-bold hover:bg-gray-300 transition mx-2 mt-4 md:mt-0">ត្រលប់ទៅមើលសំណួរ</button>
                     <button onclick="userAnswers = new Array(24).fill(null); renderQuiz();" class="bg-blue-600 text-white px-6 py-2 rounded-full font-bold hover:bg-blue-700 transition mx-2 mt-4 md:mt-0">ធ្វើតេស្តម្ដងទៀត</button>
                 </div>
             `;
@@ -516,8 +668,22 @@
             document.getElementById('quiz-modal').scrollTop = 0;
         }
 
+        // Feature: Go to specific rule from results and allow coming back
+        function goToRule(ruleNumber) {
+            closeQuiz(); // Hide modal
+            // Scroll to rule
+            document.getElementById(`rule-${ruleNumber}`).scrollIntoView({ behavior: 'smooth' });
+            // Show floating back button
+            document.getElementById('back-to-results-btn').classList.remove('hidden');
+        }
+
+        // Return from reading rule back to results
+        function restoreResults() {
+            document.getElementById('back-to-results-btn').classList.add('hidden');
+            openQuiz(); // Just open the modal again (it remembers isResultView and content)
+        }
+
         function copyResultText(text) {
-            // Create a temporary textarea element
             const el = document.createElement('textarea');
             el.value = text;
             document.body.appendChild(el);
