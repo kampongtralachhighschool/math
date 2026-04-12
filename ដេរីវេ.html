@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>មេរៀនដេរីវេ ថ្នាក់ទី១២</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=Moul&display=swap" rel="stylesheet">
+    
+    <!-- MathJax for rendering math formulas -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+
+    <style>
+        body {
+            font-family: 'Battambang', cursive;
+            background-color: #f3f4f6;
+        }
+        .title-font {
+            font-family: 'Moul', cursive;
+        }
+        .highlight-flash {
+            animation: flashBg 2s ease-out;
+        }
+        @keyframes flashBg {
+            0% { background-color: #fef08a; transform: scale(1.02); }
+            100% { background-color: transparent; transform: scale(1); }
+        }
+        .math-scroll {
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding-bottom: 5px;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; rounded-lg: 4px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <div class="max-w-5xl mx-auto p-4 sm:p-6 lg:p-8">
+        
+        <!-- Header -->
+        <header class="text-center mb-8 bg-blue-600 text-white p-6 rounded-xl shadow-lg">
+            <h1 class="text-3xl sm:text-4xl title-font mb-2">មេរៀន៖ ដេរីវេនៃអនុគមន៍</h1>
+            <p class="text-blue-100 text-lg">គណិតវិទ្យា ថ្នាក់ទី១២</p>
+        </header>
+
+        <!-- Tabs Navigation -->
+        <div class="flex flex-wrap border-b border-gray-300 mb-6 gap-2 sm:gap-0">
+            <button onclick="switchTab('tab1')" id="btn-tab1" class="tab-btn sm:flex-1 py-3 px-4 sm:px-6 bg-white border-t border-l border-r border-gray-300 rounded-t-lg font-bold text-blue-600 hover:bg-gray-50 focus:outline-none transition">
+                📖 ខ្លឹមសារមេរៀន & អនុវត្តន៍
+            </button>
+            <button onclick="switchTab('tab2')" id="btn-tab2" class="tab-btn sm:flex-1 py-3 px-4 sm:px-6 bg-gray-200 border border-gray-300 rounded-t-lg font-bold text-gray-600 hover:bg-gray-100 focus:outline-none transition">
+                📽️ ស្លាយមេរៀន
+            </button>
+            <button onclick="switchTab('tab3')" id="btn-tab3" class="tab-btn sm:flex-1 py-3 px-4 sm:px-6 bg-gray-200 border border-gray-300 rounded-t-lg font-bold text-gray-600 hover:bg-gray-100 focus:outline-none transition">
+                📝 លំហាត់ពហុជ្រើសរើស (២០)
+            </button>
+        </div>
+
+        <!-- TAB 1: ខ្លឹមសារមេរៀន -->
+        <div id="tab1" class="tab-content bg-white p-6 sm:p-8 rounded-b-xl rounded-tr-xl shadow-md">
+            <h2 class="text-2xl font-bold mb-6 text-blue-700 border-b-2 border-blue-200 pb-2">ខ្លឹមសារមេរៀនសង្ខេប</h2>
+
+            <!-- Section 1: Basic Rules -->
+            <div id="basic-rules" class="mb-8 p-4 rounded-lg transition-colors duration-500 border border-transparent">
+                <h3 class="text-xl font-bold mb-3 text-gray-800">១. វិធានគ្រឹះនៃដេរីវេ</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-lg bg-gray-50 p-4 rounded-lg math-scroll">
+                    <div>១. $(C)' = 0$ (C ជាចំនួនថេរ)</div>
+                    <div>២. $(x)' = 1$</div>
+                    <div>៣. $(x^n)' = n x^{n-1}$</div>
+                    <div>៤. $(cx^n)' = c \cdot n x^{n-1}$</div>
+                    <div>៥. $(\frac{1}{x})' = -\frac{1}{x^2}$</div>
+                    <div>៦. $(\sqrt{x})' = \frac{1}{2\sqrt{x}}$</div>
+                </div>
+                <div class="mt-4 bg-blue-50 p-3 rounded text-sm sm:text-base border-l-4 border-blue-400">
+                    <strong>ឧទាហរណ៍៖</strong> <br>
+                    - $f(x) = 5 \Rightarrow f'(x) = 0$<br>
+                    - $f(x) = x^4 \Rightarrow f'(x) = 4x^{4-1} = 4x^3$
+                </div>
+            </div>
+
+            <!-- Section 2: Operation Rules -->
+            <div id="operation-rules" class="mb-8 p-4 rounded-lg transition-colors duration-500 border border-transparent">
+                <h3 class="text-xl font-bold mb-3 text-gray-800">២. ប្រមាណវិធីលើដេរីវេ</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-lg bg-gray-50 p-4 rounded-lg math-scroll">
+                    <div>១. ផលបូក/ដក៖ $(u \pm v)' = u' \pm v'$</div>
+                    <div>២. ផលគុណ៖ $(uv)' = u'v + uv'$</div>
+                    <div>៣. ផលចែក៖ $(\frac{u}{v})' = \frac{u'v - uv'}{v^2}$</div>
+                    <div>៤. ចំនួនថេរគុណអនុគមន៍៖ $(cu)' = cu'$</div>
+                </div>
+                <div class="mt-4 bg-blue-50 p-3 rounded text-sm sm:text-base border-l-4 border-blue-400 math-scroll">
+                    <strong>ឧទាហរណ៍ផលគុណ៖</strong> $y = x^2 \sin x $<br>
+                    $y' = (x^2)' \sin x + x^2 (\sin x)' = 2x \sin x + x^2 \cos x$
+                </div>
+            </div>
+
+            <!-- Section 3: Trig Rules -->
+            <div id="trig-rules" class="mb-8 p-4 rounded-lg transition-colors duration-500 border border-transparent">
+                <h3 class="text-xl font-bold mb-3 text-gray-800">៣. អនុគមន៍ត្រីកោណមាត្រ</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-lg bg-gray-50 p-4 rounded-lg math-scroll">
+                    <div>១. $(\sin x)' = \cos x$</div>
+                    <div>២. $(\cos x)' = -\sin x$</div>
+                    <div>៣. $(\tan x)' = \frac{1}{\cos^2 x} = 1 + \tan^2 x$</div>
+                    <div>៤. $(\cot x)' = -\frac{1}{\sin^2 x} = -(1 + \cot^2 x)$</div>
+                </div>
+            </div>
+
+            <!-- Section 4: Exp & Log Rules -->
+            <div id="exp-log-rules" class="mb-8 p-4 rounded-lg transition-colors duration-500 border border-transparent">
+                <h3 class="text-xl font-bold mb-3 text-gray-800">៤. អនុគមន៍អិចស្ប៉ូណង់ស្យែល និងលោការីត</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-lg bg-gray-50 p-4 rounded-lg math-scroll">
+                    <div>១. $(e^x)' = e^x$</div>
+                    <div>២. $(a^x)' = a^x \ln a$</div>
+                    <div>៣. $(\ln x)' = \frac{1}{x}$</div>
+                    <div>៤. $(\log_a x)' = \frac{1}{x \ln a}$</div>
+                </div>
+            </div>
+
+            <!-- Section 5: Chain Rule -->
+            <div id="chain-rule" class="mb-8 p-4 rounded-lg transition-colors duration-500 border border-transparent">
+                <h3 class="text-xl font-bold mb-3 text-gray-800">៥. វិធានបណ្ដាក់ (Chain Rule)</h3>
+                <p class="mb-2">បើយើងមានអនុគមន៍បណ្ដាក់ $f(g(x))$ នោះដេរីវេគឺ៖ $[f(g(x))]' = f'(g(x)) \cdot g'(x)$</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-lg bg-gray-50 p-4 rounded-lg math-scroll">
+                    <div>១. $(u^n)' = n \cdot u^{n-1} \cdot u'$</div>
+                    <div>២. $(\sin u)' = u' \cos u$</div>
+                    <div>៣. $(\cos u)' = -u' \sin u$</div>
+                    <div>៤. $(e^u)' = u' e^u$</div>
+                    <div>៥. $(\ln u)' = \frac{u'}{u}$</div>
+                    <div>៦. $(\sqrt{u})' = \frac{u'}{2\sqrt{u}}$</div>
+                </div>
+                <div class="mt-4 bg-blue-50 p-3 rounded text-sm sm:text-base border-l-4 border-blue-400 math-scroll">
+                    <strong>ឧទាហរណ៍៖</strong> $y = (3x+2)^4$<br>
+                    តាង $u = 3x+2 \Rightarrow u' = 3$<br>
+                    $y' = 4(3x+2)^3 \cdot (3) = 12(3x+2)^3$
+                </div>
+            </div>
+
+            <!-- Dynamic Practice Area -->
+            <div class="mt-10 p-6 bg-white border-2 border-green-500 rounded-xl shadow-sm">
+                <h3 class="text-2xl font-bold mb-4 text-green-700 flex items-center">
+                    <span class="mr-2">⚡</span> លំហាត់អនុវត្តបែបដូរលេខដោយស្វ័យប្រវត្តិ
+                </h3>
+                <p class="mb-4 text-gray-600">ចូរគណនាដេរីវេនៃអនុគមន៍ខាងក្រោម រួចបញ្ចូលចម្លើយរបស់អ្នក។</p>
+                
+                <div class="flex flex-col md:flex-row gap-6 items-center bg-green-50 p-6 rounded-lg">
+                    <div class="text-2xl font-bold" id="dynamic-question">
+                        <!-- Question rendered here -->
+                    </div>
+                    
+                    <div class="flex items-center gap-2 text-xl">
+                        <span>$f'(x) =$</span>
+                        <input type="number" id="ans-coef" class="w-20 p-2 border-2 border-gray-300 rounded text-center focus:border-green-500 outline-none" placeholder="មេគុណ">
+                        <span>$x$ ស្វ័យគុណ</span>
+                        <input type="number" id="ans-pow" class="w-16 p-2 border-2 border-gray-300 rounded text-center focus:border-green-500 outline-none" placeholder="n">
+                    </div>
+                </div>
+
+                <div class="mt-6 flex gap-4">
+                    <button onclick="checkDynamicPractice()" class="px-6 py-2 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 transition shadow">ផ្ទៀងផ្ទាត់ចម្លើយ</button>
+                    <button onclick="generateDynamicPractice()" class="px-6 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition shadow">ប្ដូរលំហាត់ថ្មី</button>
+                </div>
+                
+                <div id="dynamic-feedback" class="mt-4 text-lg font-bold hidden"></div>
+            </div>
+        </div>
+
+        <!-- TAB 2: ស្លាយមេរៀន (Slides) -->
+        <div id="tab2" class="tab-content hidden bg-white p-4 sm:p-8 rounded-b-xl rounded-tr-xl shadow-md min-h-[500px] flex flex-col">
+            <div class="flex-grow flex items-center justify-center bg-gray-800 rounded-xl overflow-hidden relative" id="slide-container">
+                <!-- Slide content will be injected here -->
+                <div id="slide-content" class="text-white p-8 sm:p-12 text-center w-full max-w-3xl">
+                    <!-- Dynamic Slide Content -->
+                </div>
+            </div>
+            
+            <div class="flex justify-between items-center mt-6">
+                <button onclick="prevSlide()" class="px-6 py-2 bg-gray-200 text-gray-800 font-bold rounded hover:bg-gray-300 transition flex items-center">
+                    <span>&#8592;</span> ថយក្រោយ
+                </button>
+                <div id="slide-indicator" class="font-bold text-gray-500">
+                    1 / 5
+                </div>
+                <button onclick="nextSlide()" class="px-6 py-2 bg-blue-600 text-white font-bold rounded hover:bg-blue-700 transition flex items-center">
+                    ទៅមុខ <span>&#8594;</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- TAB 3: លំហាត់ពហុជ្រើសរើស (MCQ) -->
+        <div id="tab3" class="tab-content hidden bg-white p-6 sm:p-8 rounded-b-xl rounded-tr-xl shadow-md">
+            <div class="flex justify-between items-center mb-6 border-b-2 border-blue-200 pb-2">
+                <h2 class="text-2xl font-bold text-blue-700">លំហាត់ពហុជ្រើសរើស (២០ សំណួរ)</h2>
+                <div id="quiz-score-badge" class="hidden bg-green-100 text-green-800 px-4 py-2 rounded-full font-bold text-lg">
+                    ពិន្ទុ: <span id="score-display">0/20</span>
+                </div>
+            </div>
+            
+            <p class="text-gray-600 mb-6">ជ្រើសរើសចម្លើយដែលត្រឹមត្រូវបំផុតសម្រាប់សំណួរនីមួយៗ។ ប្រសិនបើអ្នកធ្វើខុស ប្រព័ន្ធនឹងបង្ហាញប៊ូតុងសម្រាប់ត្រឡប់ទៅអានមេរៀនចំណុចនោះឡើងវិញ។</p>
+
+            <form id="mcq-form" class="space-y-8">
+                <div id="mcq-container">
+                    <!-- MCQ questions will be generated here by JS -->
+                </div>
+
+                <div class="pt-6 border-t border-gray-200 text-center">
+                    <button type="button" onclick="submitQuiz()" id="submit-quiz-btn" class="px-8 py-3 bg-blue-600 text-white text-xl font-bold rounded-lg hover:bg-blue-700 transition shadow-lg w-full sm:w-auto">
+                        បញ្ជូនចម្លើយ (Submit)
+                    </button>
+                    <button type="button" onclick="resetQuiz()" id="reset-quiz-btn" class="hidden px-8 py-3 bg-gray-600 text-white text-xl font-bold rounded-lg hover:bg-gray-700 transition shadow-lg w-full sm:w-auto">
+                        ធ្វើម្ដងទៀត (Retry)
+                    </button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // --- Tab Switching Logic ---
+        function switchTab(tabId) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+            // Reset button styles
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-white', 'text-blue-600', 'border-t', 'border-l', 'border-r');
+                btn.classList.add('bg-gray-200', 'text-gray-600', 'border');
+            });
+
+            // Show selected tab
+            document.getElementById(tabId).classList.remove('hidden');
+            // Highlight selected button
+            const activeBtn = document.getElementById('btn-' + tabId);
+            activeBtn.classList.remove('bg-gray-200', 'text-gray-600', 'border');
+            activeBtn.classList.add('bg-white', 'text-blue-600', 'border-t', 'border-l', 'border-r');
+
+            // Re-render math when switching tabs
+            if(window.MathJax) {
+                MathJax.typesetPromise();
+            }
+        }
+
+        // --- Go to specific lesson point (from incorrect MCQ) ---
+        function goToLessonPoint(sectionId) {
+            switchTab('tab1');
+            const element = document.getElementById(sectionId);
+            if(element) {
+                // Scroll to element
+                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                // Add highlight flash class
+                element.classList.remove('highlight-flash'); // reset
+                void element.offsetWidth; // trigger reflow
+                element.classList.add('highlight-flash');
+            }
+        }
+
+        // --- Dynamic Practice Logic ---
+        let currentPracAnsCoef = 0;
+        let currentPracAnsPow = 0;
+
+        function generateDynamicPractice() {
+            // Generate random values: f(x) = a * x^n
+            const a = Math.floor(Math.random() * 10) + 2; // 2 to 11
+            const n = Math.floor(Math.random() * 8) + 3;  // 3 to 10
+            
+            // Calculate answer
+            currentPracAnsCoef = a * n;
+            currentPracAnsPow = n - 1;
+
+            const qContainer = document.getElementById('dynamic-question');
+            qContainer.innerHTML = `\\( f(x) = ${a}x^{${n}} \\)`;
+
+            // Clear inputs and feedback
+            document.getElementById('ans-coef').value = '';
+            document.getElementById('ans-pow').value = '';
+            const feedback = document.getElementById('dynamic-feedback');
+            feedback.className = 'mt-4 text-lg font-bold hidden';
+            feedback.innerHTML = '';
+
+            // Re-render math
+            if(window.MathJax) {
+                MathJax.typesetPromise([qContainer]);
+            }
+        }
+
+        function checkDynamicPractice() {
+            const userCoef = parseInt(document.getElementById('ans-coef').value);
+            const userPow = parseInt(document.getElementById('ans-pow').value);
+            const feedback = document.getElementById('dynamic-feedback');
+
+            feedback.classList.remove('hidden', 'text-green-600', 'text-red-600');
+
+            if (isNaN(userCoef) || isNaN(userPow)) {
+                feedback.innerHTML = "សូមបញ្ចូលចម្លើយឲ្យបានពេញលេញ!";
+                feedback.classList.add('text-red-600');
+                return;
+            }
+
+            if (userCoef === currentPracAnsCoef && userPow === currentPracAnsPow) {
+                feedback.innerHTML = `✅ ត្រឹមត្រូវ! ចម្លើយគឺ \\( f'(x) = ${currentPracAnsCoef}x^{${currentPracAnsPow}} \\)`;
+                feedback.classList.add('text-green-600');
+            } else {
+                feedback.innerHTML = `❌ ខុសហើយ។ សូមព្យាយាមម្ដងទៀត! (តម្រុយ: មេគុណថ្មី = មេគុណចាស់ $\\times$ ស្វ័យគុណចាស់, ឯស្វ័យគុណថ្មីត្រូវដក១)`;
+                feedback.classList.add('text-red-600');
+            }
+            
+            if(window.MathJax) {
+                MathJax.typesetPromise([feedback]);
+            }
+        }
+
+        // --- Slide Presentation Logic ---
+        const slides = [
+            {
+                title: "មេរៀនទី១៖ ដេរីវេ",
+                content: `<h1 class="text-5xl font-bold text-yellow-400 mb-6">ដេរីវេនៃអនុគមន៍</h1>
+                          <p class="text-2xl text-gray-200">សង្ខេបរូបមន្ត និង វិធានគណនា</p>`
+            },
+            {
+                title: "និយមន័យ និង រូបមន្តគ្រឹះ",
+                content: `<h2 class="text-3xl font-bold text-blue-300 mb-6">រូបមន្តគ្រឹះ</h2>
+                          <div class="text-left inline-block text-xl space-y-4">
+                              <p>\\( (C)' = 0 \\)</p>
+                              <p>\\( (x)' = 1 \\)</p>
+                              <p>\\( (x^n)' = n x^{n-1} \\)</p>
+                              <p>\\( (\\frac{1}{x})' = -\\frac{1}{x^2} \\)</p>
+                              <p>\\( (\\sqrt{x})' = \\frac{1}{2\\sqrt{x}} \\)</p>
+                          </div>`
+            },
+            {
+                title: "ប្រមាណវិធី",
+                content: `<h2 class="text-3xl font-bold text-green-300 mb-6">ប្រមាណវិធីលើដេរីវេ</h2>
+                          <div class="text-left inline-block text-xl space-y-4">
+                              <p>ផលបូក: \\( (u+v)' = u' + v' \\)</p>
+                              <p>ផលគុណ: \\( (uv)' = u'v + uv' \\)</p>
+                              <p>ផលចែក: \\( (\\frac{u}{v})' = \\frac{u'v - uv'}{v^2} \\)</p>
+                          </div>`
+            },
+            {
+                title: "អនុគមន៍ត្រីកោណមាត្រ",
+                content: `<h2 class="text-3xl font-bold text-pink-300 mb-6">ត្រីកោណមាត្រ</h2>
+                          <div class="text-left inline-block text-xl space-y-4">
+                              <p>\\( (\\sin x)' = \\cos x \\)</p>
+                              <p>\\( (\\cos x)' = -\\sin x \\)</p>
+                              <p>\\( (\\tan x)' = \\frac{1}{\\cos^2 x} \\)</p>
+                          </div>`
+            },
+            {
+                title: "អនុគមន៍អិចស្ប៉ូណង់ស្យែល & លោការីត",
+                content: `<h2 class="text-3xl font-bold text-purple-300 mb-6">Exp & Log</h2>
+                          <div class="text-left inline-block text-xl space-y-4">
+                              <p>\\( (e^x)' = e^x \\)</p>
+                              <p>\\( (\\ln x)' = \\frac{1}{x} \\)</p>
+                              <p>\\( (e^u)' = u'e^u \\) (វិធានបណ្ដាក់)</p>
+                              <p>\\( (\\ln u)' = \\frac{u'}{u} \\) (វិធានបណ្ដាក់)</p>
+                          </div>`
+            }
+        ];
+
+        let currentSlideIdx = 0;
+
+        function renderSlide() {
+            const container = document.getElementById('slide-content');
+            const indicator = document.getElementById('slide-indicator');
+            
+            // Add fade animation class implicitly by replacing innerHTML
+            container.innerHTML = `<div class="animate-pulse">${slides[currentSlideIdx].content}</div>`;
+            setTimeout(() => {
+                container.innerHTML = slides[currentSlideIdx].content;
+                if(window.MathJax) {
+                    MathJax.typesetPromise([container]);
+                }
+            }, 50);
+
+            indicator.innerText = `${currentSlideIdx + 1} / ${slides.length}`;
+        }
+
+        function nextSlide() {
+            if (currentSlideIdx < slides.length - 1) {
+                currentSlideIdx++;
+                renderSlide();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlideIdx > 0) {
+                currentSlideIdx--;
+                renderSlide();
+            }
+        }
+
+        // --- MCQ Logic ---
+        const mcqData = [
+            // Basic Rules
+            { q: "គណនាដេរីវេនៃ \\( f(x) = 15 \\)", options: ["\\( 15 \\)", "\\( 1 \\)", "\\( 0 \\)", "\\( 15x \\)"], correct: 2, relatedId: "basic-rules" },
+            { q: "គណនាដេរីវេនៃ \\( f(x) = x^4 \\)", options: ["\\( 4x^3 \\)", "\\( 3x^4 \\)", "\\( x^3 \\)", "\\( 4x^4 \\)"], correct: 0, relatedId: "basic-rules" },
+            { q: "គណនាដេរីវេនៃ \\( f(x) = 3x^2 - 5x + 2 \\)", options: ["\\( 6x - 5x \\)", "\\( 6x - 5 \\)", "\\( 3x - 5 \\)", "\\( x^2 - 5 \\)"], correct: 1, relatedId: "basic-rules" },
+            // Operation Rules
+            { q: "រូបមន្តដេរីវេនៃផលគុណ \\( (uv)' \\) គឺ៖", options: ["\\( u'v' \\)", "\\( u'v - uv' \\)", "\\( u'v + uv' \\)", "\\( u + v' \\)"], correct: 2, relatedId: "operation-rules" },
+            { q: "រូបមន្តដេរីវេនៃផលចែក \\( (\\frac{u}{v})' \\) គឺ៖", options: ["\\( \\frac{u'v - uv'}{v^2} \\)", "\\( \\frac{u'v + uv'}{v^2} \\)", "\\( \\frac{u' - v'}{v^2} \\)", "\\( \\frac{u'v'}{v} \\)"], correct: 0, relatedId: "operation-rules" },
+            { q: "គណនាដេរីវេនៃ \\( y = \\frac{1}{x} \\)", options: ["\\( \\frac{1}{x^2} \\)", "\\( -\\frac{1}{x^2} \\)", "\\( \\ln x \\)", "\\( x^2 \\)"], correct: 1, relatedId: "basic-rules" },
+            // Trig Rules
+            { q: "គណនាដេរីវេនៃ \\( y = \\sin x \\)", options: ["\\( \\cos x \\)", "\\( -\\cos x \\)", "\\( \\sin x \\)", "\\( -\\sin x \\)"], correct: 0, relatedId: "trig-rules" },
+            { q: "គណនាដេរីវេនៃ \\( y = \\cos x \\)", options: ["\\( \\sin x \\)", "\\( -\\sin x \\)", "\\( \\tan x \\)", "\\( -\\cos x \\)"], correct: 1, relatedId: "trig-rules" },
+            { q: "គណនាដេរីវេនៃ \\( y = \\tan x \\)", options: ["\\( \\frac{1}{\\sin^2 x} \\)", "\\( -\\frac{1}{\\cos^2 x} \\)", "\\( \\frac{1}{\\cos^2 x} \\)", "\\( \\cot x \\)"], correct: 2, relatedId: "trig-rules" },
+            // Exp & Log Rules
+            { q: "គណនាដេរីវេនៃ \\( y = e^x \\)", options: ["\\( xe^{x-1} \\)", "\\( e^x \\)", "\\( \\ln x \\)", "\\( \\frac{1}{e^x} \\)"], correct: 1, relatedId: "exp-log-rules" },
+            { q: "គណនាដេរីវេនៃ \\( y = \\ln x \\)", options: ["\\( e^x \\)", "\\( \\frac{1}{x^2} \\)", "\\( -\\frac{1}{x} \\)", "\\( \\frac{1}{x} \\)"], correct: 3, relatedId: "exp-log-rules" },
+            { q: "គណនាដេរីវេនៃ \\( y = 2^x \\)", options: ["\\( x2^{x-1} \\)", "\\( 2^x \\ln 2 \\)", "\\( \\frac{2^x}{\\ln 2} \\)", "\\( 2^x \\)"], correct: 1, relatedId: "exp-log-rules" },
+            // Chain Rule
+            { q: "រូបមន្តវិធានបណ្ដាក់ \\( (u^n)' \\) គឺ៖", options: ["\\( n u^{n-1} \\)", "\\( n u^{n-1} u' \\)", "\\( u^{n-1} u' \\)", "\\( n u' \\)"], correct: 1, relatedId: "chain-rule" },
+            { q: "គណនាដេរីវេនៃ \\( y = (2x+1)^3 \\)", options: ["\\( 3(2x+1)^2 \\)", "\\( 6(2x+1)^2 \\)", "\\( 6(2x+1)^3 \\)", "\\( 3(2x)^2 \\)"], correct: 1, relatedId: "chain-rule" },
+            { q: "គណនាដេរីវេនៃ \\( y = \\sin(3x) \\)", options: ["\\( \\cos(3x) \\)", "\\( -3\\cos(3x) \\)", "\\( 3\\cos(3x) \\)", "\\( 3\\sin(3x) \\)"], correct: 2, relatedId: "chain-rule" },
+            { q: "គណនាដេរីវេនៃ \\( y = e^{2x} \\)", options: ["\\( 2e^{2x} \\)", "\\( e^{2x} \\)", "\\( 2xe^{2x} \\)", "\\( e^{2x} \\ln 2 \\)"], correct: 0, relatedId: "chain-rule" },
+            { q: "គណនាដេរីវេនៃ \\( y = \\ln(5x) \\)", options: ["\\( \\frac{1}{5x} \\)", "\\( \\frac{5}{x} \\)", "\\( \\frac{1}{x} \\)", "\\( 5\\ln(5x) \\)"], correct: 2, relatedId: "chain-rule" }, // u'/u = 5/(5x) = 1/x
+            // Mixed / Advanced
+            { q: "គណនាដេរីវេនៃ \\( y = x e^x \\)", options: ["\\( e^x \\)", "\\( x e^x \\)", "\\( e^x(1+x) \\)", "\\( e^x(1-x) \\)"], correct: 2, relatedId: "operation-rules" },
+            { q: "គណនាដេរីវេនៃ \\( y = \\sqrt{x^2+1} \\)", options: ["\\( \\frac{1}{2\\sqrt{x^2+1}} \\)", "\\( \\frac{x}{\\sqrt{x^2+1}} \\)", "\\( \\frac{2x}{\\sqrt{x^2+1}} \\)", "\\( \\frac{1}{\\sqrt{x^2+1}} \\)"], correct: 1, relatedId: "chain-rule" },
+            { q: "គណនាដេរីវេនៃ \\( y = \\cos(x^2) \\)", options: ["\\( -2x\\sin(x^2) \\)", "\\( 2x\\sin(x^2) \\)", "\\( -\\sin(x^2) \\)", "\\( -2x\\cos(x^2) \\)"], correct: 0, relatedId: "chain-rule" }
+        ];
+
+        function renderMCQ() {
+            const container = document.getElementById('mcq-container');
+            container.innerHTML = ''; // clear
+
+            mcqData.forEach((item, index) => {
+                const qDiv = document.createElement('div');
+                qDiv.className = 'bg-gray-50 p-6 rounded-lg border border-gray-200 shadow-sm mb-4';
+                qDiv.id = `q-container-${index}`;
+
+                // Question Title
+                const qTitle = document.createElement('h4');
+                qTitle.className = 'text-lg font-bold mb-4 text-gray-800';
+                qTitle.innerHTML = `សំណួរទី ${index + 1}: ${item.q}`;
+                qDiv.appendChild(qTitle);
+
+                // Options Grid
+                const optGrid = document.createElement('div');
+                optGrid.className = 'grid grid-cols-1 sm:grid-cols-2 gap-3';
+
+                item.options.forEach((opt, optIndex) => {
+                    const label = document.createElement('label');
+                    label.className = 'flex items-center p-3 border rounded-lg cursor-pointer hover:bg-blue-50 transition bg-white';
+                    
+                    const radio = document.createElement('input');
+                    radio.type = 'radio';
+                    radio.name = `q${index}`;
+                    radio.value = optIndex;
+                    radio.className = 'w-5 h-5 text-blue-600 focus:ring-blue-500 mr-3';
+
+                    const optText = document.createElement('span');
+                    optText.className = 'text-lg math-scroll';
+                    optText.innerHTML = opt;
+
+                    label.appendChild(radio);
+                    label.appendChild(optText);
+                    optGrid.appendChild(label);
+                });
+
+                qDiv.appendChild(optGrid);
+
+                // Feedback Container (hidden initially)
+                const feedbackDiv = document.createElement('div');
+                feedbackDiv.id = `feedback-${index}`;
+                feedbackDiv.className = 'mt-4 hidden p-4 rounded-lg';
+                qDiv.appendChild(feedbackDiv);
+
+                container.appendChild(qDiv);
+            });
+            
+            if(window.MathJax) {
+                MathJax.typesetPromise([container]);
+            }
+        }
+
+        function submitQuiz() {
+            let score = 0;
+            
+            mcqData.forEach((item, index) => {
+                const radios = document.getElementsByName(`q${index}`);
+                let selectedValue = -1;
+                
+                // Find selected option
+                for(let radio of radios) {
+                    // Disable radios after submit
+                    radio.disabled = true;
+                    if(radio.checked) {
+                        selectedValue = parseInt(radio.value);
+                    }
+                }
+
+                const feedbackDiv = document.getElementById(`feedback-${index}`);
+                const qContainer = document.getElementById(`q-container-${index}`);
+                feedbackDiv.classList.remove('hidden');
+
+                if (selectedValue === item.correct) {
+                    score++;
+                    qContainer.classList.add('border-green-400', 'bg-green-50');
+                    qContainer.classList.remove('border-gray-200');
+                    feedbackDiv.classList.add('bg-green-100', 'text-green-800');
+                    feedbackDiv.innerHTML = `✅ ត្រឹមត្រូវ!`;
+                } else {
+                    qContainer.classList.add('border-red-400', 'bg-red-50');
+                    qContainer.classList.remove('border-gray-200');
+                    feedbackDiv.classList.add('bg-red-100', 'text-red-800');
+                    
+                    let msg = selectedValue === -1 ? `⚠️ អ្នកមិនទាន់បានជ្រើសរើសចម្លើយ។` : `❌ ខុសហើយ។`;
+                    msg += `<br>ចម្លើយត្រឹមត្រូវគឺ៖ <strong>${item.options[item.correct]}</strong>`;
+                    
+                    // Button to return to lesson
+                    msg += `<div class="mt-3">
+                                <button type="button" onclick="goToLessonPoint('${item.relatedId}')" class="text-sm bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 font-bold shadow transition flex items-center inline-flex">
+                                    <span>🔍 ត្រឡប់ទៅមើលមេរៀនចំណុចនេះឡើងវិញ</span>
+                                </button>
+                            </div>`;
+
+                    feedbackDiv.innerHTML = msg;
+                }
+            });
+
+            // Update Score Badge
+            const scoreBadge = document.getElementById('quiz-score-badge');
+            const scoreDisplay = document.getElementById('score-display');
+            scoreBadge.classList.remove('hidden');
+            scoreDisplay.innerText = `${score}/20`;
+
+            // Toggle buttons
+            document.getElementById('submit-quiz-btn').classList.add('hidden');
+            document.getElementById('reset-quiz-btn').classList.remove('hidden');
+
+            // Re-render math in feedbacks
+            if(window.MathJax) {
+                MathJax.typesetPromise();
+            }
+            
+            // Scroll to top of quiz to see score
+            document.getElementById('tab3').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function resetQuiz() {
+            // Reset UI
+            document.getElementById('quiz-score-badge').classList.add('hidden');
+            document.getElementById('submit-quiz-btn').classList.remove('hidden');
+            document.getElementById('reset-quiz-btn').classList.add('hidden');
+            
+            // Re-render fresh MCQ
+            renderMCQ();
+            
+            // Scroll to top
+            document.getElementById('tab3').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // --- Initialization ---
+        window.onload = function() {
+            generateDynamicPractice();
+            renderSlide();
+            renderMCQ();
+            // Default select Tab 1
+            switchTab('tab1');
+        };
+    </script>
+</body>
+</html>
