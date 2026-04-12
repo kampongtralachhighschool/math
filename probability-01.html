@@ -4,54 +4,82 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>កម្រងលំហាត់ប្រូបាបបាក់ឌុប តាមក្បួន</title>
-    <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts for Khmer -->
     <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <!-- MathJax for rendering math equations -->
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>
-        MathJax = {
-            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }
-        };
+        MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] } };
     </script>
     <style>
         body { font-family: 'Kantumruy Pro', sans-serif; background-color: #f3f4f6; }
         .math-text { font-family: 'Times New Roman', serif; }
         
-        /* Print Styles to convert to PDF smoothly */
+        /* Fixed Print Styles for Page Breaks */
         @media print {
             body { background-color: white; }
             .no-print { display: none !important; }
-            .print-break-inside-avoid { break-inside: avoid; }
+            section { page-break-inside: auto; } /* Allow sections to span multiple pages */
+            /* Force individual cards to stay together */
+            .keep-together { page-break-inside: avoid; break-inside: avoid; }
             .shadow-lg, .shadow-md { box-shadow: none !important; border: 1px solid #e5e7eb; }
+            h2 { page-break-after: avoid; }
         }
     </style>
 </head>
-<body class="text-gray-800 p-4 md:p-8">
+<body class="text-gray-800 p-4 md:p-8" onload="checkClassParams()">
 
     <!-- Header Section -->
-    <div class="max-w-5xl mx-auto bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-2xl p-8 mb-10 shadow-xl print-break-inside-avoid">
+    <div class="max-w-5xl mx-auto bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-2xl p-8 mb-10 shadow-xl keep-together">
         <h1 class="text-3xl md:text-4xl font-bold mb-4 text-center">សៀវភៅជំនួយស្មារតី៖ ប្រូបាប (ថ្នាក់ទី១២)</h1>
         <p class="text-center text-blue-100 text-lg">ចងក្រងតាមក្បួនស្តង់ដាប្រឡងបាក់ឌុប មានឧទាហរណ៍ លំហាត់អនុវត្តន៍ និងគន្លឹះដោះស្រាយ</p>
-        <div class="text-center mt-6 no-print">
-            <button onclick="window.print()" class="bg-white text-blue-700 px-6 py-2 rounded-full font-bold hover:bg-blue-50 transition shadow-md mx-2">
-                🖨️ បោះពុម្ពជា PDF (Print to PDF)
+        
+        <div id="class-banner" class="hidden mt-4 text-center bg-yellow-400 text-yellow-900 font-bold py-2 px-4 rounded-lg inline-block w-full max-w-md mx-auto shadow">
+            កិច្ចការសម្រាប់ថ្នាក់៖ <span id="class-name-display" class="text-xl"></span>
+        </div>
+
+        <div class="text-center mt-6 no-print flex flex-wrap justify-center gap-4">
+            <button onclick="window.print()" class="bg-white text-blue-700 px-6 py-2 rounded-full font-bold hover:bg-blue-50 transition shadow-md">
+                🖨️ បោះពុម្ពជា PDF
             </button>
-            <button onclick="openQuiz()" class="bg-yellow-400 text-yellow-900 px-6 py-2 rounded-full font-bold hover:bg-yellow-300 transition shadow-md mx-2 mt-4 md:mt-0">
-                📝 តេស្តសមត្ថភាព (២៤ លំហាត់)
+            <button onclick="openQuiz()" class="bg-yellow-400 text-yellow-900 px-6 py-2 rounded-full font-bold hover:bg-yellow-300 transition shadow-md">
+                📝 តេស្តសមត្ថភាព
             </button>
+            <button onclick="openTeacherModal()" class="bg-emerald-500 text-white px-6 py-2 rounded-full font-bold hover:bg-emerald-600 transition shadow-md">
+                👨‍🏫 សម្រាប់លោកគ្រូ អ្នកគ្រូ
+            </button>
+        </div>
+    </div>
+
+    <!-- Teacher Invite Modal -->
+    <div id="teacher-modal" class="fixed inset-0 bg-gray-900 bg-opacity-95 z-50 hidden flex items-center justify-center no-print">
+        <div class="bg-white p-8 rounded-2xl max-w-md w-full mx-4 shadow-2xl">
+            <h2 class="text-2xl font-bold text-emerald-600 mb-4">បង្កើតតំណភ្ជាប់សម្រាប់សិស្ស</h2>
+            <p class="text-gray-600 mb-4">សូមបញ្ចូលឈ្មោះថ្នាក់របស់អ្នក ដើម្បីបង្កើត Link សម្រាប់ចែកចាយឲ្យសិស្សធ្វើតេស្ត និងងាយស្រួលប្រមូលលទ្ធផល។</p>
+            <input type="text" id="teacher-class-name" placeholder="ឧទាហរណ៍៖ ថ្នាក់ 12A ឬ ថ្នាក់បំប៉នចុងសប្តាហ៍" class="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:ring-2 focus:ring-emerald-500 outline-none">
+            
+            <div id="invite-link-container" class="hidden mb-4">
+                <p class="text-sm font-bold text-gray-700 mb-1">តំណភ្ជាប់របស់អ្នក៖</p>
+                <div class="flex">
+                    <input type="text" id="invite-link-input" readonly class="w-full p-2 bg-gray-100 border border-gray-300 rounded-l-lg text-sm text-gray-600 outline-none">
+                    <button onclick="copyInviteLink()" class="bg-emerald-600 text-white px-4 py-2 rounded-r-lg font-bold hover:bg-emerald-700">ចម្លង</button>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 mt-6">
+                <button onclick="closeTeacherModal()" class="px-4 py-2 text-gray-600 hover:text-gray-800 font-bold">បិទ</button>
+                <button onclick="generateInvite()" class="bg-emerald-500 text-white px-6 py-2 rounded-lg font-bold hover:bg-emerald-600">បង្កើត Link</button>
+            </div>
         </div>
     </div>
 
     <div class="max-w-5xl mx-auto space-y-12">
 
         <!-- ================= RULE 1 ================= -->
-        <section id="rule-1" class="print-break-inside-avoid">
+        <section id="rule-1">
             <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b-4 border-blue-500 pb-2 inline-block">ក្បួនទី ១៖ ការទាញយកព្រមគ្នា (ប្រើរូបមន្តបន្សំ)</h2>
             
-            <div class="bg-white rounded-2xl shadow-lg p-6 border-l-8 border-blue-500 hover:shadow-xl transition duration-300 mb-6">
+            <div class="bg-white rounded-2xl shadow-lg p-6 border-l-8 border-blue-500 keep-together mb-6">
                 <h3 class="text-xl font-bold text-blue-600 mb-3">📘 រូបមន្ត និង គោលការណ៍</h3>
                 <p>នៅពេលលំហាត់មានពាក្យថា <strong>"ទាញយកព្រមគ្នា"</strong> ឬ <strong>"ក្នុងពេលតែមួយ"</strong> មិនគិតលំដាប់លំដោយ យើងត្រូវប្រើរូបមន្តបន្សំ៖</p>
                 <div class="bg-blue-50 p-4 rounded-lg text-center text-xl my-3">
@@ -60,7 +88,7 @@
                 <p class="text-lg">ប្រូបាបនៃព្រឹត្តិការណ៍ $A$: $P(A) = \frac{n(A)}{n(S)}$ <span class="text-gray-500 text-base">(ចំនួនករណីស្រប / ចំនួនករណីអាចសរុប)</span></p>
             </div>
 
-            <div class="bg-emerald-50 rounded-2xl shadow-md p-6 border-l-4 border-emerald-500 mb-6">
+            <div class="bg-emerald-50 rounded-2xl shadow-md p-6 border-l-4 border-emerald-500 keep-together mb-6">
                 <h3 class="text-lg font-bold text-emerald-700 mb-2">🎯 ឧទាហរណ៍គំរូ</h3>
                 <p>ក្នុងថង់មួយមានបាល់ក្រហម ៥ និងបាល់ខៀវ ៤។ គេចាប់យកបាល់ ៣ ព្រមគ្នា។ គណនាប្រូបាបដែលគេចាប់បានបាល់ក្រហម ២ និងខៀវ ១។</p>
                 <div class="mt-4 text-gray-700">
@@ -74,31 +102,22 @@
                 </div>
             </div>
 
-            <div class="bg-orange-50 rounded-2xl shadow-md p-6 border-l-4 border-orange-500">
+            <div class="bg-orange-50 rounded-2xl shadow-md p-6 border-l-4 border-orange-500 keep-together">
                 <h3 class="text-lg font-bold text-orange-700 mb-4">✍️ លំហាត់អនុវត្តន៍ (ដូរលេខ)</h3>
-                
                 <div class="space-y-4">
                     <div class="p-4 bg-white rounded-lg shadow-sm">
                         <p><strong>លំហាត់ ១.១៖</strong> ថង់មួយមានបាល់ស ៦ និងខ្មៅ ៣។ ទាញយក ៣ ព្រមគ្នា។ រកប្រូបាបបានបាល់ស ២ និងខ្មៅ ១។</p>
                         <p class="text-sm text-gray-500 mt-2"><strong>💡 Tip:</strong> $C(9,3)$ ជាភាគបែង, ភាគយកគឺ $C(6,2) \times C(3,1)$។ <br> <strong>🔑 ចម្លើយ:</strong> $P = \frac{15 \times 3}{84} = \frac{45}{84} = \frac{15}{28}$</p>
-                    </div>
-                    <div class="p-4 bg-white rounded-lg shadow-sm">
-                        <p><strong>លំហាត់ ១.២៖</strong> ប្រអប់មួយមានប៊ិចបៃតង ៤ និងលឿង ៥។ ចាប់យក ៣ ព្រមគ្នា។ រកប្រូបាបបានប៊ិចបៃតងទាំង ៣។</p>
-                        <p class="text-sm text-gray-500 mt-2"><strong>💡 Tip:</strong> រកតែបៃតង មិនបាច់គុណពណ៌លឿងទេ។ <br> <strong>🔑 ចម្លើយ:</strong> $P = \frac{C(4,3)}{C(9,3)} = \frac{4}{84} = \frac{1}{21}$</p>
-                    </div>
-                    <div class="p-4 bg-white rounded-lg shadow-sm">
-                        <p><strong>លំហាត់ ១.៣៖</strong> ក្រុមមួយមានបុរស ៧នាក់ និងស្ត្រី ៣នាក់។ គេរើសសមាជិក ៤នាក់ព្រមគ្នា។ រកប្រូបាបបានបុរស ២ និងស្ត្រី ២។</p>
-                        <p class="text-sm text-gray-500 mt-2"><strong>💡 Tip:</strong> ករណីអាច $C(10,4)$។ <br> <strong>🔑 ចម្លើយ:</strong> $P = \frac{C(7,2) \times C(3,2)}{C(10,4)} = \frac{21 \times 3}{210} = \frac{63}{210} = \frac{3}{10}$</p>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- ================= RULE 2 ================= -->
-        <section id="rule-2" class="print-break-inside-avoid">
+        <section id="rule-2">
             <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b-4 border-indigo-500 pb-2 inline-block mt-8">ក្បួនទី ២៖ ការទាញបន្តបន្ទាប់ មិនដាក់ចូលវិញ (ច្បាប់គុណ)</h2>
             
-            <div class="bg-white rounded-2xl shadow-lg p-6 border-l-8 border-indigo-500 hover:shadow-xl transition duration-300 mb-6">
+            <div class="bg-white rounded-2xl shadow-lg p-6 border-l-8 border-indigo-500 keep-together mb-6">
                 <h3 class="text-xl font-bold text-indigo-600 mb-3">📘 រូបមន្ត និង គោលការណ៍</h3>
                 <p>ពាក្យ <strong>"ជាបន្តបន្ទាប់ និងមិនដាក់ចូលវិញ"</strong> មានន័យថា ចំនួនសរុប (ភាគបែង) ត្រូវថយចុះម្ដង ១។ បើសំណួរប្រាប់ពីលំដាប់ (ឧ. បានពណ៌ ក រួច ខ) ប្រើច្បាប់គុណ។</p>
                 <div class="bg-indigo-50 p-4 rounded-lg text-center text-lg my-3 font-semibold text-indigo-800">
@@ -106,7 +125,7 @@
                 </div>
             </div>
 
-            <div class="bg-emerald-50 rounded-2xl shadow-md p-6 border-l-4 border-emerald-500 mb-6">
+            <div class="bg-emerald-50 rounded-2xl shadow-md p-6 border-l-4 border-emerald-500 keep-together mb-6">
                 <h3 class="text-lg font-bold text-emerald-700 mb-2">🎯 ឧទាហរណ៍គំរូ</h3>
                 <p>ប្រអប់មួយមានបាល់ខ្មៅ ៤ និងក្រហម ៣។ គេទាញយកបាល់ ២ ជាបន្តបន្ទាប់មិនដាក់វិញ។ រកប្រូបាបដែលទាញបាន "បាល់ទី១ខ្មៅ និងទី២ក្រហម"។</p>
                 <div class="mt-4 text-gray-700">
@@ -119,32 +138,23 @@
                     </ul>
                 </div>
             </div>
-
-            <div class="bg-orange-50 rounded-2xl shadow-md p-6 border-l-4 border-orange-500">
+            
+            <div class="bg-orange-50 rounded-2xl shadow-md p-6 border-l-4 border-orange-500 keep-together">
                 <h3 class="text-lg font-bold text-orange-700 mb-4">✍️ លំហាត់អនុវត្តន៍ (ដូរលេខ)</h3>
-                
                 <div class="space-y-4">
                     <div class="p-4 bg-white rounded-lg shadow-sm">
                         <p><strong>លំហាត់ ២.១៖</strong> ថង់មួយមានបាល់ខៀវ ៥ និងក្រហម ៤។ ទាញបាល់ ២ បន្តបន្ទាប់មិនដាក់វិញ។ រកប្រូបាបបានបាល់ទី១ខៀវ និងទី២ក្រហម។</p>
                         <p class="text-sm text-gray-500 mt-2"><strong>💡 Tip:</strong> ភាគបែងថយពី ៩ ទៅ ៨។ <br> <strong>🔑 ចម្លើយ:</strong> $P = \frac{5}{9} \times \frac{4}{8} = \frac{20}{72} = \frac{5}{18}$</p>
-                    </div>
-                    <div class="p-4 bg-white rounded-lg shadow-sm">
-                        <p><strong>លំហាត់ ២.២៖</strong> ប្រអប់មានប៊ិចស ៦ និងខ្មៅ ២។ ទាញយក ២ បន្តបន្ទាប់មិនដាក់វិញ។ រកប្រូបាបបានប៊ិចសទាំង ២។</p>
-                        <p class="text-sm text-gray-500 mt-2"><strong>💡 Tip:</strong> លើកទី១បានស (ភាគយក ៦) និងលើកទី២ក៏ស (ភាគយកសល់ ៥)។ <br> <strong>🔑 ចម្លើយ:</strong> $P = \frac{6}{8} \times \frac{5}{7} = \frac{30}{56} = \frac{15}{28}$</p>
-                    </div>
-                    <div class="p-4 bg-white rounded-lg shadow-sm">
-                        <p><strong>លំហាត់ ២.៣៖</strong> មានកាតពណ៌បៃតង ៣ និងលឿង ៥។ ទាញ ២ បន្តបន្ទាប់មិនដាក់វិញ។ រកប្រូបាបបានបៃតង១ និងលឿង១ (មិនគិតលំដាប់)។</p>
-                        <p class="text-sm text-gray-500 mt-2"><strong>💡 Tip:</strong> មិនគិតលំដាប់ គឺត្រូវយក (បៃតងរួចលឿង) + (លឿងរួចបៃតង)។ <br> <strong>🔑 ចម្លើយ:</strong> $P = (\frac{3}{8} \times \frac{5}{7}) + (\frac{5}{8} \times \frac{3}{7}) = \frac{15}{56} + \frac{15}{56} = \frac{30}{56} = \frac{15}{28}$</p>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- ================= RULE 3 ================= -->
-        <section id="rule-3" class="print-break-inside-avoid">
+        <section id="rule-3">
             <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b-4 border-purple-500 pb-2 inline-block mt-8">ក្បួនទី ៣៖ ព្រឹត្តិការណ៍ផ្ទុយ (ពាក្យ "យ៉ាងតិច")</h2>
             
-            <div class="bg-white rounded-2xl shadow-lg p-6 border-l-8 border-purple-500 hover:shadow-xl transition duration-300 mb-6">
+            <div class="bg-white rounded-2xl shadow-lg p-6 border-l-8 border-purple-500 keep-together mb-6">
                 <h3 class="text-xl font-bold text-purple-600 mb-3">📘 រូបមន្ត និង គោលការណ៍</h3>
                 <p>នៅពេលលំហាត់សួររកប្រូបាបដែលមាន <strong>"យ៉ាងតិច១..."</strong> វិធីដែលលឿនបំផុតគឺគណនាព្រឹត្តិការណ៍ផ្ទុយរបស់វា គឺ <strong>"គ្មានសោះ"</strong>។</p>
                 <div class="bg-purple-50 p-4 rounded-lg text-center text-lg my-3 font-semibold text-purple-800">
@@ -152,7 +162,7 @@
                 </div>
             </div>
 
-            <div class="bg-emerald-50 rounded-2xl shadow-md p-6 border-l-4 border-emerald-500 mb-6">
+            <div class="bg-emerald-50 rounded-2xl shadow-md p-6 border-l-4 border-emerald-500 keep-together mb-6">
                 <h3 class="text-lg font-bold text-emerald-700 mb-2">🎯 ឧទាហរណ៍គំរូ</h3>
                 <p>ជ្រើសរើសមនុស្ស ៤នាក់ចេញពី បុរស ៦នាក់ និងស្ត្រី ៤នាក់។ គណនាប្រូបាបដើម្បីមានសមាជិកជាស្ត្រីយ៉ាងតិចម្នាក់។</p>
                 <div class="mt-4 text-gray-700">
@@ -165,32 +175,22 @@
                     </ul>
                 </div>
             </div>
-
-            <div class="bg-orange-50 rounded-2xl shadow-md p-6 border-l-4 border-orange-500">
+            <div class="bg-orange-50 rounded-2xl shadow-md p-6 border-l-4 border-orange-500 keep-together">
                 <h3 class="text-lg font-bold text-orange-700 mb-4">✍️ លំហាត់អនុវត្តន៍ (ដូរលេខ)</h3>
-                
                 <div class="space-y-4">
                     <div class="p-4 bg-white rounded-lg shadow-sm">
                         <p><strong>លំហាត់ ៣.១៖</strong> ថង់មួយមានបាល់ក្រហម ៥ និងខៀវ ៥។ ចាប់យក ៣។ រកប្រូបាបបានបាល់ក្រហមយ៉ាងតិច ១។</p>
-                        <p class="text-sm text-gray-500 mt-2"><strong>💡 Tip:</strong> ផ្ទុយគឺ "គ្មានក្រហមសោះ" គឺ "ខៀវទាំង៣"។ ករណីអាច $C(10,3)=120$។ <br> <strong>🔑 ចម្លើយ:</strong> $1 - \frac{C(5,3)}{120} = 1 - \frac{10}{120} = \frac{110}{120} = \frac{11}{12}$</p>
-                    </div>
-                    <div class="p-4 bg-white rounded-lg shadow-sm">
-                        <p><strong>លំហាត់ ៣.២៖</strong> ក្នុងប្រអប់មានអំពូលភ្លើងល្អ ៧ និងខូច ៣។ គេទិញ ៣ ព្រមគ្នា។ រកប្រូបាបដែលទិញប៉ះអំពូលខូចយ៉ាងតិច ១។</p>
-                        <p class="text-sm text-gray-500 mt-2"><strong>💡 Tip:</strong> ផ្ទុយគឺ "គ្មានខូចសោះ" គឺ "បានល្អទាំង៣"។ ករណីអាច $C(10,3)=120$។ <br> <strong>🔑 ចម្លើយ:</strong> $1 - \frac{C(7,3)}{120} = 1 - \frac{35}{120} = 1 - \frac{7}{24} = \frac{17}{24}$</p>
-                    </div>
-                    <div class="p-4 bg-white rounded-lg shadow-sm">
-                        <p><strong>លំហាត់ ៣.៣៖</strong> សិស្សប្រុស ៨នាក់ និងស្រី ៤នាក់។ ជ្រើសរើស ៣នាក់។ រកប្រូបាបបានសិស្សស្រីយ៉ាងតិចម្នាក់។</p>
-                        <p class="text-sm text-gray-500 mt-2"><strong>💡 Tip:</strong> ផ្ទុយគឺ "ប្រុសទាំង៣"។ ករណីអាច $C(12,3)=220$។ <br> <strong>🔑 ចម្លើយ:</strong> $1 - \frac{C(8,3)}{220} = 1 - \frac{56}{220} = 1 - \frac{14}{55} = \frac{41}{55}$</p>
+                        <p class="text-sm text-gray-500 mt-2"><strong>💡 Tip:</strong> ផ្ទុយគឺ "គ្មានក្រហមសោះ" គឺ "ខៀវទាំង៣"។ ករណីអាច $C(10,3)=120$។ <br> <strong>🔑 ចម្លើយ:</strong> $1 - \frac{C(5,3)}{120} = \frac{11}{12}$</p>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- ================= RULE 4 ================= -->
-        <section id="rule-4" class="print-break-inside-avoid">
+        <section id="rule-4">
             <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b-4 border-rose-500 pb-2 inline-block mt-8">ក្បួនទី ៤៖ សង្ឃឹមគណិត (Mathematical Expectation)</h2>
             
-            <div class="bg-white rounded-2xl shadow-lg p-6 border-l-8 border-rose-500 hover:shadow-xl transition duration-300 mb-6">
+            <div class="bg-white rounded-2xl shadow-lg p-6 border-l-8 border-rose-500 keep-together mb-6">
                 <h3 class="text-xl font-bold text-rose-600 mb-3">📘 រូបមន្ត និង គោលការណ៍</h3>
                 <p>សង្ឃឹមគណិត (តម្លៃមធ្យមនៃអញ្ញាតចៃដន្យ $X$) គឺជាផលបូកនៃផលគុណតម្លៃអញ្ញាតចៃដន្យ និងប្រូបាបរបស់វា។ ប្រើញឹកញាប់ក្នុងល្បែងចាក់លុយ។</p>
                 <div class="bg-rose-50 p-4 rounded-lg text-center text-lg my-3">
@@ -199,7 +199,7 @@
                 <p class="text-sm text-rose-600">*ប្រាក់ដែលត្រូវចាញ់ (បាត់បង់) ត្រូវសរសេរជាលេខអវិជ្ជមាន $(-)$។</p>
             </div>
 
-            <div class="bg-emerald-50 rounded-2xl shadow-md p-6 border-l-4 border-emerald-500 mb-6">
+            <div class="bg-emerald-50 rounded-2xl shadow-md p-6 border-l-4 border-emerald-500 keep-together mb-6">
                 <h3 class="text-lg font-bold text-emerald-700 mb-2">🎯 ឧទាហរណ៍គំរូ</h3>
                 <p>គេបោះឡុកឡាក់១គ្រាប់។ បើចេញលេខគូ អ្នកឈ្នះប្រាក់ ៣០០០រៀល តែបើចេញសេស អ្នកចាញ់ ១០០០រៀល។ គណនាសង្ឃឹមគណិត $E(X)$។</p>
                 <div class="mt-4 text-gray-700">
@@ -212,32 +212,13 @@
                     </ul>
                 </div>
             </div>
-
-            <div class="bg-orange-50 rounded-2xl shadow-md p-6 border-l-4 border-orange-500">
-                <h3 class="text-lg font-bold text-orange-700 mb-4">✍️ លំហាត់អនុវត្តន៍ (ដូរលេខ)</h3>
-                
-                <div class="space-y-4">
-                    <div class="p-4 bg-white rounded-lg shadow-sm">
-                        <p><strong>លំហាត់ ៤.១៖</strong> បោះកាក់១។ បើចេញរូប (H) ឈ្នះ ៥០០០៛។ បើចេញលេខ (T) ចាញ់ ២០០០៛។ គណនាសង្ឃឹមគណិត។</p>
-                        <p class="text-sm text-gray-500 mt-2"><strong>💡 Tip:</strong> ប្រូបាបកាក់គឺ $1/2$ ម្នាក់។ <br> <strong>🔑 ចម្លើយ:</strong> $E(X) = (5000 \times 0.5) + (-2000 \times 0.5) = 2500 - 1000 = 1500$ រៀល</p>
-                    </div>
-                    <div class="p-4 bg-white rounded-lg shadow-sm">
-                        <p><strong>លំហាត់ ៤.២៖</strong> ក្នុងប្រអប់មានបាល់ក្រហម ៣ និងខ្មៅ ២។ ចាប់១បាល់។ បើបានក្រហម ឈ្នះ ៤០០០៛។ បើបានខ្មៅ ចាញ់ ១០០០៛។ គណនាសង្ឃឹមគណិត។</p>
-                        <p class="text-sm text-gray-500 mt-2"><strong>💡 Tip:</strong> ប្រូបាបក្រហម ៣/៥, ប្រូបាបខ្មៅ ២/៥។ <br> <strong>🔑 ចម្លើយ:</strong> $E(X) = (4000 \times \frac{3}{5}) + (-1000 \times \frac{2}{5}) = 2400 - 400 = 2000$ រៀល</p>
-                    </div>
-                    <div class="p-4 bg-white rounded-lg shadow-sm">
-                        <p><strong>លំហាត់ ៤.៣៖</strong> កងវិលមួយមាន ៤ផ្នែកស្មើគ្នា (ពណ៌មាស១ និងខ្មៅ៣)។ បើឈប់ចំមាស ឈ្នះ ១០០០០៛, ចំខ្មៅ ចាញ់ ២០០០៛។ គណនាសង្ឃឹមគណិត។</p>
-                        <p class="text-sm text-gray-500 mt-2"><strong>💡 Tip:</strong> ប្រូបាបមាស ១/៤, ប្រូបាបខ្មៅ ៣/៤។ <br> <strong>🔑 ចម្លើយ:</strong> $E(X) = (10000 \times \frac{1}{4}) + (-2000 \times \frac{3}{4}) = 2500 - 1500 = 1000$ រៀល</p>
-                    </div>
-                </div>
-            </div>
         </section>
 
         <!-- ================= RULE 5 ================= -->
-        <section id="rule-5" class="print-break-inside-avoid">
+        <section id="rule-5">
             <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b-4 border-amber-500 pb-2 inline-block mt-8">ក្បួនទី ៥៖ ប្រូបាបមានលក្ខខណ្ឌ (Conditional Probability)</h2>
             
-            <div class="bg-white rounded-2xl shadow-lg p-6 border-l-8 border-amber-500 hover:shadow-xl transition duration-300 mb-6">
+            <div class="bg-white rounded-2xl shadow-lg p-6 border-l-8 border-amber-500 keep-together mb-6">
                 <h3 class="text-xl font-bold text-amber-600 mb-3">📘 រូបមន្ត និង គោលការណ៍</h3>
                 <p>ប្រើនៅពេលគេចង់រកប្រូបាបនៃព្រឹត្តិការណ៍មួយ <strong>"ដោយដឹងជាមុនថា"</strong> ព្រឹត្តិការណ៍មួយទៀតបានកើតឡើងរួចហើយ។</p>
                 <div class="bg-amber-50 p-4 rounded-lg text-center text-lg my-3">
@@ -245,7 +226,7 @@
                 </div>
             </div>
 
-            <div class="bg-emerald-50 rounded-2xl shadow-md p-6 border-l-4 border-emerald-500 mb-6">
+            <div class="bg-emerald-50 rounded-2xl shadow-md p-6 border-l-4 border-emerald-500 keep-together mb-6">
                 <h3 class="text-lg font-bold text-emerald-700 mb-2">🎯 ឧទាហរណ៍គំរូ</h3>
                 <p>សិស្ស ៥០នាក់ មាន ៣០នាក់ចេះអង់គ្លេស, ២០នាក់ចេះបារាំង និង ១០នាក់ចេះទាំងពីរ។ គេហៅសិស្សម្នាក់។ រកប្រូបាបសិស្សនោះចេះបារាំង ដោយដឹងជាមុនថាគេចេះអង់គ្លេស។</p>
                 <div class="mt-4 text-gray-700">
@@ -257,32 +238,13 @@
                     </ul>
                 </div>
             </div>
-
-            <div class="bg-orange-50 rounded-2xl shadow-md p-6 border-l-4 border-orange-500">
-                <h3 class="text-lg font-bold text-orange-700 mb-4">✍️ លំហាត់អនុវត្តន៍ (ដូរលេខ)</h3>
-                
-                <div class="space-y-4">
-                    <div class="p-4 bg-white rounded-lg shadow-sm">
-                        <p><strong>លំហាត់ ៥.១៖</strong> មនុស្ស ៤០នាក់។ ២៥នាក់ចូលចិត្តគណិត, ១៥នាក់ចូលចិត្តរូបវិទ្យា, និង ៥នាក់ចូលចិត្តទាំងពីរ។ គេជ្រើសរើសម្នាក់ដែលដឹងថាចូលចិត្តគណិត។ រកប្រូបាបដែលគាត់ចូលចិត្តរូបវិទ្យា។</p>
-                        <p class="text-sm text-gray-500 mt-2"><strong>💡 Tip:</strong> ភាគបែងគឺអ្នកចូលចិត្តគណិត ២៥, ភាគយកគឺអ្នកចូលចិត្តទាំងពីរ ៥។ <br> <strong>🔑 ចម្លើយ:</strong> <span class="math-text italic">P</span>(រូប|គណិត) = $\frac{5}{25} = \frac{1}{5}$</p>
-                    </div>
-                    <div class="p-4 bg-white rounded-lg shadow-sm">
-                        <p><strong>លំហាត់ ៥.២៖</strong> ភ្ញៀវទេសចរ ៦០នាក់។ ៤០នាក់ទៅសមុទ្រ, ៣០នាក់ទៅភ្នំ, ១៥នាក់ទៅទាំងពីរ។ បើជ្រើសចំអ្នកដែលទៅសមុទ្រ តើមានប្រូបាបប៉ុន្មានដែលគាត់ទៅភ្នំដែរ?</p>
-                        <p class="text-sm text-gray-500 mt-2"><strong>💡 Tip:</strong> លក្ខខណ្ឌគឺ "ទៅសមុទ្រ" ៤០នាក់។ <br> <strong>🔑 ចម្លើយ:</strong> <span class="math-text italic">P</span>(ភ្នំ|សមុទ្រ) = $\frac{15}{40} = \frac{3}{8}$</p>
-                    </div>
-                    <div class="p-4 bg-white rounded-lg shadow-sm">
-                        <p><strong>លំហាត់ ៥.៣៖</strong> ឡាន ១០០គ្រឿង។ ៦០គ្រឿងមានម៉ាស៊ីនត្រជាក់ (AC), ៥០គ្រឿងមាន GPS, ២០គ្រឿងមានទាំងពីរ។ បើគេជ្រើសឡានមួយដែលមាន AC តើប្រូបាបវាមាន GPS មានប៉ុន្មាន?</p>
-                        <p class="text-sm text-gray-500 mt-2"><strong>💡 Tip:</strong> លក្ខខណ្ឌគឺ "មាន AC" ៦០គ្រឿង។ <br> <strong>🔑 ចម្លើយ:</strong> $P(GPS|AC) = \frac{20}{60} = \frac{1}{3}$</p>
-                    </div>
-                </div>
-            </div>
         </section>
 
         <!-- ================= RULE 6 ================= -->
-        <section id="rule-6" class="print-break-inside-avoid">
+        <section id="rule-6">
             <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b-4 border-cyan-500 pb-2 inline-block mt-8">ក្បួនទី ៦៖ ការតម្រៀប និង ចម្លាស់ (គិតលំដាប់លំដោយ)</h2>
             
-            <div class="bg-white rounded-2xl shadow-lg p-6 border-l-8 border-cyan-500 hover:shadow-xl transition duration-300 mb-6">
+            <div class="bg-white rounded-2xl shadow-lg p-6 border-l-8 border-cyan-500 keep-together mb-6">
                 <h3 class="text-xl font-bold text-cyan-600 mb-3">📘 រូបមន្ត និង គោលការណ៍</h3>
                 <p>ប្រើនៅពេលជ្រើសរើសដោយមាន <strong>ការគិតលំដាប់លំដោយ</strong> (ឧទាហរណ៍៖ បង្កើតលេខកូដ, ចែកតួនាទី ប្រធាន/អនុប្រធាន, រៀបជួរអង្គុយ)។</p>
                 <div class="bg-cyan-50 p-4 rounded-lg text-center text-lg my-3 space-y-2">
@@ -291,37 +253,18 @@
                 </div>
             </div>
 
-            <div class="bg-emerald-50 rounded-2xl shadow-md p-6 border-l-4 border-emerald-500 mb-6">
+            <div class="bg-emerald-50 rounded-2xl shadow-md p-6 border-l-4 border-emerald-500 keep-together mb-6">
                 <h3 class="text-lg font-bold text-emerald-700 mb-2">🎯 ឧទាហរណ៍គំរូ</h3>
                 <p>គេចង់បង្កើតចំនួនដែលមានលេខ ៣ ខ្ទង់ខុសៗគ្នា ចេញពីតួលេខ 1, 2, 3, 4, 5។ រកប្រូបាបដែលចំនួននោះជាចំនួនគូ។</p>
                 <div class="mt-4 text-gray-700">
                     <p><strong>ដំណោះស្រាយ៖</strong></p>
                     <ul class="list-disc ml-6 mt-2 space-y-1">
-                        <li>ចំនួនអាចសរុប (តម្រៀប ៣លេខពី ៥លេខ): $n(S) = P(5,3) = 5 \times 4 \times 3 = 60$</li>
-                        <li>លក្ខខណ្ឌចំនួនគូ: ខ្ទង់រាយ (ចុងក្រោយ) ត្រូវជាលេខ {2, 4} (មាន ២ ជម្រើស)។</li>
-                        <li>លេខ ២ខ្ទង់មុខ ជ្រើសចេញពី ៤លេខដែលនៅសល់: $P(4,2) = 4 \times 3 = 12$</li>
+                        <li>ចំនួនអាចសរុប (តម្រៀប ៣លេខពី ៥លេខ): $n(S) = P(5,3) = 60$</li>
+                        <li>លក្ខខណ្ឌចំនួនគូ: ខ្ទង់រាយ ត្រូវជាលេខ {2, 4} (មាន ២ ជម្រើស)។</li>
+                        <li>លេខ ២ខ្ទង់មុខ ជ្រើសចេញពី ៤លេខដែលនៅសល់: $P(4,2) = 12$</li>
                         <li>ករណីស្រប $n(A) = 2 \times 12 = 24$ ចំនួន។</li>
                         <li>ប្រូបាប: $P(A) = \frac{24}{60} = \frac{2}{5}$</li>
                     </ul>
-                </div>
-            </div>
-
-            <div class="bg-orange-50 rounded-2xl shadow-md p-6 border-l-4 border-orange-500">
-                <h3 class="text-lg font-bold text-orange-700 mb-4">✍️ លំហាត់អនុវត្តន៍ (ដូរលេខ)</h3>
-                
-                <div class="space-y-4">
-                    <div class="p-4 bg-white rounded-lg shadow-sm">
-                        <p><strong>លំហាត់ ៦.១៖</strong> បង្កើតលេខ ៣ខ្ទង់ពី {1, 2, 3, 4}។ រកប្រូបាបដែលវាជាចំនួនសេស។</p>
-                        <p class="text-sm text-gray-500 mt-2"><strong>💡 Tip:</strong> ខ្ទង់រាយមាន ២ជម្រើស {1, 3}។ ភាគបែងគឺ $P(4,3)$។ <br> <strong>🔑 ចម្លើយ:</strong> $P = \frac{2 \times P(3,2)}{P(4,3)} = \frac{2 \times 6}{24} = \frac{12}{24} = \frac{1}{2}$</p>
-                    </div>
-                    <div class="p-4 bg-white rounded-lg shadow-sm">
-                        <p><strong>លំហាត់ ៦.២៖</strong> មនុស្ស ៥នាក់ (មាន ក និង ខ) អង្គុយលើកៅអី ៥ ជាជួរត្រង់។ រកប្រូបាបដែល ក និង ខ អង្គុយជាប់គ្នា។</p>
-                        <p class="text-sm text-gray-500 mt-2"><strong>💡 Tip:</strong> ចង ក និង ខ ជា ១ក្រុម នាំឲ្យសល់ $4!$ រួចគុណនឹងចម្លាស់ទីតាំង ក,ខ ($2!$)។ <br> <strong>🔑 ចម្លើយ:</strong> $P = \frac{4! \times 2!}{5!} = \frac{24 \times 2}{120} = \frac{48}{120} = \frac{2}{5}$</p>
-                    </div>
-                    <div class="p-4 bg-white rounded-lg shadow-sm">
-                        <p><strong>លំហាត់ ៦.៣៖</strong> ជ្រើសរើសប្រធាន១ និងអនុប្រធាន១ ពីសិស្ស ៦នាក់ (ប្រុស ៤ ស្រី ២)។ រកប្រូបាបបានប្រធានជាស្រី និងអនុប្រធានជាប្រុស។</p>
-                        <p class="text-sm text-gray-500 mt-2"><strong>💡 Tip:</strong> ការមានតួនាទី ជាការតម្រៀប។ ភាគបែង $P(6,2)$។ <br> <strong>🔑 ចម្លើយ:</strong> $P = \frac{2 \times 4}{P(6,2)} = \frac{8}{30} = \frac{4}{15}$</p>
-                    </div>
                 </div>
             </div>
         </section>
@@ -341,12 +284,55 @@
                 <button onclick="closeQuiz()" class="text-white hover:text-red-300 font-bold text-xl">&times; បិទ</button>
             </div>
             <div id="quiz-container" class="p-6 md:p-10 text-gray-800">
-                <!-- Quiz dynamically injected here -->
+                <!-- User Info Form initially shown here, populated by JS -->
             </div>
         </div>
     </div>
 
     <script>
+        // Global variables for tracking
+        let globalClassName = "";
+        
+        function checkClassParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const className = urlParams.get('c');
+            if (className) {
+                globalClassName = decodeURIComponent(className);
+                document.getElementById('class-name-display').innerText = globalClassName;
+                document.getElementById('class-banner').classList.remove('hidden');
+            }
+        }
+
+        function openTeacherModal() {
+            document.getElementById('teacher-modal').classList.remove('hidden');
+        }
+
+        function closeTeacherModal() {
+            document.getElementById('teacher-modal').classList.add('hidden');
+            document.getElementById('invite-link-container').classList.add('hidden');
+            document.getElementById('teacher-class-name').value = '';
+        }
+
+        function generateInvite() {
+            const className = document.getElementById('teacher-class-name').value.trim();
+            if(!className) return alert('សូមបញ្ចូលឈ្មោះថ្នាក់!');
+            
+            // Generate link without existing parameters, add the new class parameter
+            const baseUrl = window.location.href.split('?')[0];
+            const inviteUrl = `${baseUrl}?c=${encodeURIComponent(className)}`;
+            
+            document.getElementById('invite-link-input').value = inviteUrl;
+            document.getElementById('invite-link-container').classList.remove('hidden');
+        }
+
+        function copyInviteLink() {
+            const copyText = document.getElementById('invite-link-input');
+            copyText.select();
+            copyText.setSelectionRange(0, 99999);
+            document.execCommand("copy");
+            alert("តំណភ្ជាប់ត្រូវបានចម្លង! លោកគ្រូអ្នកគ្រូអាចផ្ញើវាទៅក្នុង Group Telegram របស់សិស្សបាន។");
+        }
+
         const quizData = [
             // Rule 1
             { q: "ថង់មួយមានបាល់ក្រហម ៣ និងខៀវ ២។ ចាប់២ព្រមគ្នា។ រកប្រូបាបបានក្រហម២។", options: ["$3/10$", "$1/10$", "$3/5$", "$1/5$"], correct: 0, rule: 1 },
@@ -398,7 +384,20 @@
         }
 
         function renderQuiz() {
-            let html = '<div class="space-y-8">';
+            let html = '';
+            
+            // Student Info Form
+            html += `
+                <div class="bg-blue-50 p-6 rounded-xl border border-blue-200 shadow-sm mb-8 text-gray-800">
+                    <h3 class="font-bold text-xl mb-4 text-blue-800">ព័ត៌មានសិស្ស ${globalClassName ? `(ថ្នាក់ ${globalClassName})` : '(ជាជម្រើស)'}</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input type="text" id="studentName" placeholder="ឈ្មោះសិស្ស" class="p-3 border border-gray-300 rounded-lg outline-none focus:border-blue-500">
+                        <input type="text" id="studentId" placeholder="លេខរៀងក្នុងបញ្ជី" class="p-3 border border-gray-300 rounded-lg outline-none focus:border-blue-500">
+                    </div>
+                </div>
+            `;
+
+            html += '<div class="space-y-8">';
             quizData.forEach((item, index) => {
                 html += `<div class="bg-gray-50 p-6 rounded-xl border border-gray-200 shadow-sm">
                     <p class="font-bold text-lg mb-4 text-indigo-800">លំហាត់ទី ${index + 1}: <span class="text-gray-800 font-normal">${item.q}</span></p>
@@ -429,6 +428,10 @@
         }
 
         function submitQuiz() {
+            // Get student info
+            const stName = document.getElementById('studentName') ? document.getElementById('studentName').value.trim() : 'មិនបញ្ជាក់';
+            const stId = document.getElementById('studentId') ? document.getElementById('studentId').value.trim() : '-';
+
             let score = 0;
             let wrongPerRule = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
             
@@ -449,9 +452,34 @@
             else if (score >= 6) { grade = 'E (ខ្សោយ)'; color = 'text-red-500'; }
             else { grade = 'F (ធ្លាក់)'; color = 'text-red-700'; }
 
+            // Generate report text for copying
+            let weakAreas = [];
+            for (let r = 1; r <= 6; r++) {
+                if (wrongPerRule[r] > 0) weakAreas.push(`ក្បួនទី${r}`);
+            }
+            let weakText = weakAreas.length > 0 ? weakAreas.join(', ') : 'គ្មាន (យល់ច្បាស់)';
+            
+            let reportText = `📝 លទ្ធផលតេស្តប្រូបាប\n` +
+                             `👤 សិស្ស: ${stName || 'មិនបញ្ជាក់'} (លេខ: ${stId || '-'}) \n` +
+                             `🏫 ថ្នាក់: ${globalClassName || 'មិនបញ្ជាក់'} \n` +
+                             `✅ ពិន្ទុ: ${score}/24\n` +
+                             `🎓 និទ្ទេស: ${grade.split(' ')[0]}\n` +
+                             `⚠️ ចំណុចខ្សោយ: ${weakText}`;
+
             let resultHtml = `
+                <div class="bg-indigo-50 p-6 rounded-xl border border-indigo-200 mb-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div>
+                        <p class="text-lg"><span class="font-bold text-gray-700">សិស្ស៖</span> ${stName || 'មិនបញ្ជាក់'} ${stId ? `(លេខ: ${stId})` : ''}</p>
+                        ${globalClassName ? `<p class="text-lg"><span class="font-bold text-gray-700">ថ្នាក់៖</span> ${globalClassName}</p>` : ''}
+                    </div>
+                    <button onclick='copyResultText(\`${reportText}\`)' class="bg-emerald-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-emerald-700 shadow flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+                        ចម្លងលទ្ធផលផ្ញើគ្រូ
+                    </button>
+                </div>
+
                 <div class="text-center mb-8">
-                    <h3 class="text-3xl font-bold mb-2">លទ្ធផលរបស់អ្នក</h3>
+                    <h3 class="text-3xl font-bold mb-2">ពិន្ទុសរុប</h3>
                     <p class="text-5xl font-bold ${color}">${score} / 24</p>
                     <p class="text-2xl mt-3 font-semibold text-gray-700">និទ្ទេស: <span class="${color}">${grade}</span></p>
                 </div>
@@ -486,6 +514,17 @@
             document.getElementById('quiz-container').innerHTML = resultHtml;
             MathJax.typesetPromise();
             document.getElementById('quiz-modal').scrollTop = 0;
+        }
+
+        function copyResultText(text) {
+            // Create a temporary textarea element
+            const el = document.createElement('textarea');
+            el.value = text;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            alert("លទ្ធផលត្រូវបាន Copy រួចរាល់! អ្នកអាចយកទៅ Paste ផ្ញើក្នុង Group របស់គ្រូបាន។");
         }
     </script>
 </body>
